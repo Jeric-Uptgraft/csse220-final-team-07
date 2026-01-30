@@ -33,13 +33,13 @@ public class GameComponent extends JComponent {
 
 	
 	Color currentcolor = Color.red;
+	int tile = 20; //size of tile;
 	
 	//Grid lines setup
 	g2.setColor(Color.blue);
 	g2.setStroke(new BasicStroke(2));
 	g2.drawRect(0, 0, 600, 600);
-	int tile = 20; //size of tile;
-
+	
 	// draw grid lines
 	for (int x = 0; x <= 600; x += tile) {
 	    g2.drawLine(x, 0, x, 600);   // vertical grid lines draws lines across window with varying y components
@@ -94,8 +94,16 @@ public class GameComponent extends JComponent {
 	g2.drawLine(tile*27,tile*21, tile*24,tile*21);
 	g2.drawLine(tile*24,tile*21, tile*24,tile*24);
 
+	Player player = new Player(11*tile, 10*tile, Color.RED);
+	player.drawOn(g2);
+	
+	Enemy enemy1 = new Enemy(0, 0, Color.GREEN);
+	enemy1.drawOn(g2);
+	
+	Enemy enemy2 = new Enemy(25*tile, 25*tile, Color.GREEN);
+	enemy2.drawOn(g2);
 
-
+	
 
 
 

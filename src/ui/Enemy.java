@@ -1,0 +1,28 @@
+package ui;
+
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+
+public class Enemy {
+	private static final int SIZE = 40;
+
+	private Color color;
+	
+	private int x;
+    private int y;
+
+	public Enemy(int x, int y, Color color) {
+		this.x = x;
+		this.y = y;
+		this.color = color;
+	}
+
+	public void drawOn(Graphics2D g2) {
+		g2.setColor(this.color);
+		Rectangle rect1 = new Rectangle(x, y, SIZE, SIZE);
+		g2.draw(rect1);
+		g2.fill(rect1);	
+		
+	}
+}

@@ -2,25 +2,67 @@ package ui;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.geom.Line2D;
 
 import javax.swing.JComponent;
+import javax.swing.Timer;
 
 import model.GameModel;
 
+
 public class GameComponent extends JComponent {
 
-	
-	
+	int tile = 20;
+	private int start_x = 250;
+	private int x = start_x;
+	private int y = 20;
+	private int step = 10;
+	public static final int WIDTH = 500;
+	public static final int HEIGHT = 200;
 	private GameModel model;
-
+	Player player1 = new Player(11*tile, 10*tile, Color.RED);
+	
+	
+	Enemy enemy1 = new Enemy(0, 0, Color.GREEN);
+	
+	
+	Enemy enemy2 = new Enemy(25*tile, 25*tile, Color.GREEN);
 
 	public GameComponent(GameModel model) {
 	this.model = model;
+	setFocusable(true);
+
+	addKeyListener(new KeyAdapter() {
+		  @Override
+		  public void keyPressed(KeyEvent e) {
+		    switch (e.getKeyCode()) { //switch case for WASD movement for player. 
+		    case KeyEvent.VK_W -> player1.moveUp();
+		      case KeyEvent.VK_S -> player1.moveDown();
+		      case KeyEvent.VK_A -> player1.moveLeft();
+		      case KeyEvent.VK_D -> player1.moveRight();
+		    }
+		  }
+		});
+
+	
+	
+	
+	
+		
+		Timer timer = new Timer(10, e -> {
+						  
+			repaint();
+			});
+			timer.start();
 	
 	}
+
+	
 
 
 	@Override
@@ -30,8 +72,10 @@ public class GameComponent extends JComponent {
 
 	// Minimal placeholder to test  it’s running
 	
+	player1.drawOn(g2);
+	enemy1.drawOn(g2);
+	enemy2.drawOn(g2);
 
-	
 	Color currentcolor = Color.red;
 	int tile = 20; //size of tile;
 	
@@ -94,14 +138,7 @@ public class GameComponent extends JComponent {
 	g2.drawLine(tile*27,tile*21, tile*24,tile*21);
 	g2.drawLine(tile*24,tile*21, tile*24,tile*24);
 
-	Player player = new Player(11*tile, 10*tile, Color.RED);
-	player.drawOn(g2);
 	
-	Enemy enemy1 = new Enemy(0, 0, Color.GREEN);
-	enemy1.drawOn(g2);
-	
-	Enemy enemy2 = new Enemy(25*tile, 25*tile, Color.GREEN);
-	enemy2.drawOn(g2);
 
 	
 
@@ -115,5 +152,7 @@ public class GameComponent extends JComponent {
 	 g2.setColor(currentcolor); //Set back to original color
 		}
 	// TODO: draw based on model state
-	}
+	
+
+}
 

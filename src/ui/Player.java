@@ -6,7 +6,10 @@ import java.awt.Rectangle;
 
 public class Player {
 	private static final int SIZE = 40;
-
+	private int radius;
+	private int dx = 4; // direction + speed, 4 pixels per move
+	private int dy = 4; // direction + speed
+	// sprite cache (shared by ALL balls)
 	private Color color;
 	
 	private int x;
@@ -27,4 +30,23 @@ public class Player {
 		g2.fill(rect1);	
 		
 	}
+
+	
+	public void moveUp()   { y -= dx; }
+	public void moveDown()  { y += dy; }
+	public void moveLeft()  { x -= dx; }
+	public void moveRight() { x += dy; }
+	
+	
+	
+
+	public void flip() {
+		// TODO Auto-generated method stub
+		 dx = -dx;
+	}
+
+
+	
+
+	
 }

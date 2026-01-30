@@ -19,6 +19,7 @@ public class MainApp {
 
 		});
 		System.out.println("testing");
+		System.out.println("jb testing");
 		}
 	
 	public void run() {

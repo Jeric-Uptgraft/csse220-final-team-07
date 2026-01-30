@@ -16,6 +16,7 @@ public class MainApp {
 		SwingUtilities.invokeLater(() -> {
 		new MainApp().run();
 		});
+		System.out.println("testing");
 		}
 	
 	public void run() {

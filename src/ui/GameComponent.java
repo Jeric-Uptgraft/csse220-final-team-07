@@ -54,9 +54,56 @@ public class GameComponent extends JComponent {
 	
 	
 	
-	g2.drawLine(0, tile * 2, tile * 10, tile * 2);   //notice pattern for lines
-	g2.drawLine(tile * 10, tile * 2, tile*10,tile*5);
-	g2.drawLine(tile*10,tile*5, tile*15,tile*5);  
+//	g2.drawLine(0, tile * 2, tile * 10, tile * 2);   //notice pattern for lines
+//	g2.drawLine(tile * 10, tile * 2, tile*10,tile*5);
+//	g2.drawLine(tile*10,tile*5, tile*15,tile*5);  
+	g2.drawLine(tile*3,tile*3, tile*3,tile*12);
+	g2.drawLine(tile*6,tile*0, tile*6,tile*12);
+	g2.drawLine(tile*3,tile*15, tile*6,tile*15);
+	g2.drawLine(tile*3,tile*15, tile*3,tile*21);
+	g2.drawLine(tile*0,tile*21, tile*3,tile*21);
+	g2.drawLine(tile*3,tile*24, tile*6,tile*24);
+	g2.drawLine(tile*6,tile*24, tile*6,tile*18);
+	g2.drawLine(tile*6,tile*18, tile*9,tile*18);
+	g2.drawLine(tile*9,tile*18, tile*9,tile*3);
+	g2.drawLine(tile*9,tile*3, tile*18,tile*3);
+	g2.drawLine(tile*18,tile*3, tile*18,tile*6);
+	g2.drawLine(tile*21,tile*0, tile*21,tile*6);
+	g2.drawLine(tile*21,tile*9, tile*18,tile*9);
+	g2.drawLine(tile*15,tile*6, tile*12,tile*6);
+	g2.drawLine(tile*15,tile*6, tile*15,tile*9);
+	g2.drawLine(tile*15,tile*9, tile*9,tile*9);
+	g2.drawLine(tile*12,tile*12, tile*12,tile*21);
+	g2.drawLine(tile*15,tile*9, tile*15,tile*18);
+	g2.drawLine(tile*9,tile*21, tile*18,tile*21);
+	g2.drawLine(tile*18,tile*21, tile*18,tile*15);
+	g2.drawLine(tile*18,tile*15, tile*21,tile*15);
+	g2.drawLine(tile*21,tile*12, tile*15,tile*12);
+	g2.drawLine(tile*21,tile*18, tile*21,tile*24);
+	g2.drawLine(tile*21,tile*24, tile*18,tile*24);
+//	g2.drawLine(tile*18,tile*24, tile*18,tile*27);
+	g2.drawLine(tile*15,tile*24, tile*12,tile*24);
+	g2.drawLine(tile*12,tile*24, tile*12,tile*27);
+	g2.drawLine(tile*9,tile*27, tile*9,tile*24);
+	g2.drawLine(tile*15,tile*24, tile*15,tile*21);
+	g2.drawLine(tile*24,tile*3, tile*24,tile*9);
+	g2.drawLine(tile*24,tile*9, tile*21,tile*9);
+	g2.drawLine(tile*21,tile*12, tile*24,tile*12);
+	g2.drawLine(tile*24,tile*15, tile*21,tile*15);
+	g2.drawLine(tile*21,tile*18, tile*24,tile*18);
+	g2.drawLine(tile*27,tile*21, tile*24,tile*21);
+	g2.drawLine(tile*24,tile*21, tile*24,tile*24);
+
+
+
+
+
+
+
+
+	
+	
+	
 	 g2.setColor(currentcolor); //Set back to original color
 		}
 	// TODO: draw based on model state

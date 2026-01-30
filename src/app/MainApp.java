@@ -16,7 +16,7 @@ public class MainApp {
 		SwingUtilities.invokeLater(() -> {
 		new MainApp().run();
 		System.out.println("test");
-		System.out.println("Connor");
+		System.out.println("Coor");
 
 		});
 		}

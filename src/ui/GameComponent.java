@@ -67,7 +67,9 @@ public class GameComponent extends JComponent {
 	
 		
 		Timer timer = new Timer(10, e -> {
-			player1.update();				  
+			player1.update();
+			enemy1.ai();
+			enemy2.ai();
 			repaint();
 			});
 			timer.start();

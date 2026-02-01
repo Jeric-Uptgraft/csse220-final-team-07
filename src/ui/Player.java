@@ -60,10 +60,11 @@ public class Player {
 
 	public void update() {
 		// Left wall
-		if (x < 0) {
-		x = 0; // clamp
-		dx = -dx;
-		}
+		if (x < 0) x = 0; // clamp
+		if(x > 500) x = 500;
+		if(y<0) y =0;
+		if(y>500) y = 500;
+		
 	}
 	private static void loadSpriteOnce() {
 		if (triedLoad) return;

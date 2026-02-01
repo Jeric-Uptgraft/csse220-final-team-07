@@ -45,10 +45,10 @@ public class Player {
 	}
 
 	
-	public void moveUp()   { y -= dx; }
+	public void moveUp()   { y -= dy; }
 	public void moveDown()  { y += dy; }
 	public void moveLeft()  { x -= dx; }
-	public void moveRight() { x += dy; }
+	public void moveRight() { x += dx; }
 	
 	
 	

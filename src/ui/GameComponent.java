@@ -40,12 +40,24 @@ public class GameComponent extends JComponent {
 	addKeyListener(new KeyAdapter() {
 		  @Override
 		  public void keyPressed(KeyEvent e) {
-		    switch (e.getKeyCode()) { //switch case for WASD movement for player. 
-		    case KeyEvent.VK_W -> player1.moveUp();
-		      case KeyEvent.VK_S -> player1.moveDown();
-		      case KeyEvent.VK_A -> player1.moveLeft();
-		      case KeyEvent.VK_D -> player1.moveRight();
-		    }
+//		    switch (e.getKeyCode()) { //switch case for WASD movement for player. 
+//		    case KeyEvent.VK_W -> player1.moveUp();
+//		      case KeyEvent.VK_S -> player1.moveDown();
+//		      case KeyEvent.VK_A -> player1.moveLeft();
+//		      case KeyEvent.VK_D -> player1.moveRight();
+		      if (e.getKeyCode() == KeyEvent.VK_W) {
+			      player1.moveUp();
+			    }
+		      if (e.getKeyCode() == KeyEvent.VK_S) {
+			      player1.moveDown();
+			    }
+		      if (e.getKeyCode() == KeyEvent.VK_A) {
+			      player1.moveLeft();
+			    }
+		      if (e.getKeyCode() == KeyEvent.VK_D) {
+			      player1.moveRight();
+			    }
+		    
 		  }
 		});
 
@@ -59,7 +71,7 @@ public class GameComponent extends JComponent {
 			repaint();
 			});
 			timer.start();
-	
+			
 	}
 
 	

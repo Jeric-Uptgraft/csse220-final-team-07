@@ -4,6 +4,20 @@ import javax.swing.JFrame;
 
 import model.GameModel;
 
+/**
+ * Class: GameWindow
+ * 
+ * @author Team 7
+ * 
+ * <br>
+ * Purpose:
+ * In charge of displaying the game window.
+ * This class is responsible for creating the application frame,
+ * initializing the game model, attaching the main GameComponent,
+ * and making the window visible to the user.
+ */
+
+
 public class GameWindow {
 
 	public static void show() {

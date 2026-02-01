@@ -14,6 +14,17 @@ import javax.swing.Timer;
 
 import model.GameModel;
 
+/**
+ * Class: GameComponent
+ * 
+ * @author Team 7
+ * 
+ * <br>
+ * Purpose:
+ * Represents the main visual component of the game. This class is responsible
+ * for rendering the player, enemies, grid, and maze walls, as well as handling
+ * keyboard input and driving the game loop via a timer.
+ */
 
 public class GameComponent extends JComponent {
 
@@ -152,15 +163,7 @@ public class GameComponent extends JComponent {
 	g2.drawLine(tile*27,tile*21, tile*24,tile*21);
 	g2.drawLine(tile*24,tile*21, tile*24,tile*24);
 
-	
 
-	
-
-
-
-
-
-	
 	
 	
 	 g2.setColor(currentcolor); //Set back to original color

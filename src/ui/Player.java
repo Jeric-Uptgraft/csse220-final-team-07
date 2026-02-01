@@ -8,7 +8,18 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-
+/**
+ * Class: Player
+ * 
+ * @author Team 7
+ * 
+ * <br>
+ * Purpose:
+ * Represents the player-controlled character in the game.
+ * The Player has position, movement speed, color,
+ * and optional sprite image. It can move in four directions,
+ * draw itself on the screen, and remain within screen bounds.
+ */
 
 public class Player {
 	private static final int SIZE = 60;

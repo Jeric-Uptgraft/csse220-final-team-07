@@ -105,21 +105,25 @@ public class GameComponent extends JComponent {
 		  @Override
 		  public void keyPressed(KeyEvent e) {
 
-			  switch (e.getKeyCode()) {
-		        case KeyEvent.VK_W -> player1.setVelocity(0, -3);
-		        case KeyEvent.VK_S -> player1.setVelocity(0, 3);
-		        case KeyEvent.VK_A -> player1.setVelocity(-3, 0);
-		        case KeyEvent.VK_D -> player1.setVelocity(3, 0);
-		    }
+//			  switch (e.getKeyCode()) {
+//		        case KeyEvent.VK_W -> player1.setVelocity(0, -3);
+//		        case KeyEvent.VK_S -> player1.setVelocity(0, 3);
+//		        case KeyEvent.VK_A -> player1.setVelocity(-3, 0);
+//		        case KeyEvent.VK_D -> player1.setVelocity(3, 0);
+		   // }
+		  if(e.getKeyCode() == KeyEvent.VK_W) player1.setVelocity(0, -3);
+		  if(e.getKeyCode() == KeyEvent.VK_S ) player1.setVelocity(0, 3);
+		  if(e.getKeyCode() == KeyEvent.VK_A ) player1.setVelocity(-3, 0);
+		  if(e.getKeyCode() == KeyEvent.VK_D ) player1.setVelocity(3, 0);
 		    
 		  }
-		  @Override
-		  public void keyReleased(KeyEvent e) {
-		      switch (e.getKeyCode()) {
-		          case KeyEvent.VK_W, KeyEvent.VK_S -> player1.stopY();
-		          case KeyEvent.VK_A, KeyEvent.VK_D -> player1.stopX();
-		      }
-		  }
+		 // @Override
+//		  public void keyReleased(KeyEvent e) {
+//		      switch (e.getKeyCode()) {
+//		          case KeyEvent.VK_W, KeyEvent.VK_S -> player1.stopY();
+//		          case KeyEvent.VK_A, KeyEvent.VK_D -> player1.stopX();
+//		      }
+//		  }
 		});
 
 	

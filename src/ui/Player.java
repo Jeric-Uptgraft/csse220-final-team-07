@@ -22,7 +22,7 @@ import javax.imageio.ImageIO;
  */
 
 public class Player {
-	private static final int SIZE = 60;
+	public static final int SIZE = 60;
 	private int radius;
 	private int dx = 4; // direction + speed, 4 pixels per move
 	private int dy = 4; // direction + speed
@@ -61,7 +61,15 @@ public class Player {
 	public void moveLeft()  { x -= dx; }
 	public void moveRight() { x += dx; }
 	
-	
+	public int getX() { return x; }
+	public int getY() { return y; }
+	public int getDx() { return dx; }
+	public int getDy() { return dy; }
+
+	public void setPosition(int x, int y) {
+	    this.x = x;
+	    this.y = y;
+	}
 	
 
 	public void flip() {
@@ -88,6 +96,8 @@ public class Player {
 		sprite = null; 
 		}
 		}
+
+	
 
 	
 }

@@ -13,7 +13,8 @@ import javax.swing.JComponent;
 import javax.swing.Timer;
 
 import model.GameModel;
-
+import java.awt.Rectangle;
+import java.util.ArrayList;
 /**
  * Class: GameComponent
  * 
@@ -27,6 +28,11 @@ import model.GameModel;
  */
 
 public class GameComponent extends JComponent {
+	private ArrayList<Rectangle> walls = new ArrayList<>();
+	private static final int ROWS = 30;
+	private static final int COLS = 30;
+
+	private Timer timer;
 
 	int tile = 20;
 	private int start_x = 250;
@@ -43,11 +49,48 @@ public class GameComponent extends JComponent {
 	
 	
 	Enemy enemy2 = new Enemy(25*tile, 25*tile, Color.GREEN);
+	
+	private void buildWalls() {
+	    walls.clear();
 
+	    walls.add(new Rectangle(tile*3 - 2, tile*3, 4, tile*9));
+	    walls.add(new Rectangle(tile*6 - 2, tile*0, 4, tile*12));
+	    walls.add(new Rectangle(tile*3, tile*15 - 2, tile*3, 4));
+	    walls.add(new Rectangle(tile*3 - 2, tile*15, 4, tile*6));
+	    walls.add(new Rectangle(tile*0, tile*21 - 2, tile*3, 4));
+	    walls.add(new Rectangle(tile*3, tile*24 - 2, tile*3, 4));
+	    walls.add(new Rectangle(tile*6 - 2, tile*18, 4, tile*6));
+	    walls.add(new Rectangle(tile*6, tile*18 - 2, tile*3, 4));
+	    walls.add(new Rectangle(tile*9 - 2, tile*3, 4, tile*15));
+	    walls.add(new Rectangle(tile*9, tile*3 - 2, tile*9, 4));
+	    walls.add(new Rectangle(tile*18 - 2, tile*3, 4, tile*3));
+	    walls.add(new Rectangle(tile*21 - 2, tile*0, 4, tile*6));
+	    walls.add(new Rectangle(tile*18, tile*9 - 2, tile*3, 4));
+	    walls.add(new Rectangle(tile*12, tile*6 - 2, tile*3, 4));
+	    walls.add(new Rectangle(tile*15 - 2, tile*6, 4, tile*3));
+	    walls.add(new Rectangle(tile*15, tile*9 - 2, tile*6, 4));
+	    walls.add(new Rectangle(tile*12 - 2, tile*12, 4, tile*9));
+	    walls.add(new Rectangle(tile*15 - 2, tile*9, 4, tile*9));
+	    walls.add(new Rectangle(tile*9, tile*21 - 2, tile*9, 4));
+	    walls.add(new Rectangle(tile*18 - 2, tile*15, 4, tile*6));
+	    walls.add(new Rectangle(tile*18, tile*15 - 2, tile*3, 4));
+	    walls.add(new Rectangle(tile*15, tile*12 - 2, tile*6, 4));
+	    walls.add(new Rectangle(tile*21 - 2, tile*18, 4, tile*6));
+	    walls.add(new Rectangle(tile*21, tile*24 - 2, tile*3, 4));
+	    walls.add(new Rectangle(tile*12, tile*24 - 2, tile*3, 4));
+	    walls.add(new Rectangle(tile*12 - 2, tile*24, 4, tile*3));
+	    walls.add(new Rectangle(tile*9 - 2, tile*24, 4, tile*3));
+	    walls.add(new Rectangle(tile*15 - 2, tile*21, 4, tile*3));
+	    walls.add(new Rectangle(tile*24 - 2, tile*3, 4, tile*6));
+	    walls.add(new Rectangle(tile*21, tile*9 - 2, tile*3, 4));
+	    walls.add(new Rectangle(tile*21, tile*12 - 2, tile*3, 4));
+	    walls.add(new Rectangle(tile*21, tile*15 - 2, tile*3, 4));
+	    walls.add(new Rectangle(tile*24 - 2, tile*21, 4, tile*3));
+	}
 	public GameComponent(GameModel model) {
 	this.model = model;
 	setFocusable(true);
-
+	
 	addKeyListener(new KeyAdapter() {
 		  @Override
 		  public void keyPressed(KeyEvent e) {
@@ -74,16 +117,37 @@ public class GameComponent extends JComponent {
 
 	
 	
-	
-	
+		buildWalls();
 		
-		Timer timer = new Timer(10, e -> {
-			player1.update();
-			enemy1.ai();
-			enemy2.ai();
-			repaint();
-			});
-			timer.start();
+		timer = new Timer(10, e -> {
+		    int nextX = player1.getX() + player1.getDx();
+		    int nextY = player1.getY() + player1.getDy();
+
+		    Rectangle nextPos = new Rectangle(
+		        nextX,
+		        nextY,
+		        Player.SIZE,
+		        Player.SIZE
+		    );
+
+		    boolean blocked = false;
+		    for (Rectangle wall : walls) {
+		        if (nextPos.intersects(wall)) {
+		            blocked = true;
+		            break;
+		        }
+		    }
+
+		    if (!blocked) {
+		        player1.setPosition(nextX, nextY);
+		    }
+
+		    enemy1.ai();
+		    enemy2.ai();
+		    repaint();
+		});
+
+	    timer.start();
 			
 	}
 
@@ -96,13 +160,17 @@ public class GameComponent extends JComponent {
 	Graphics2D g2 = (Graphics2D) g;
 
 	// Minimal placeholder to test  it’s running
-	
+	g2.setColor(new Color(255, 0, 0, 120)); // translucent red
+	for (Rectangle wall : walls) {
+	    g2.fill(wall);
+	}
 	player1.drawOn(g2);
 	enemy1.drawOn(g2);
 	enemy2.drawOn(g2);
 
 	Color currentcolor = Color.red;
 	int tile = 20; //size of tile;
+	g.setColor(Color.BLACK);
 	
 	//Grid lines setup
 	g2.setColor(Color.blue);

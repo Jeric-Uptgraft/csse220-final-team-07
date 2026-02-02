@@ -50,7 +50,8 @@ public class GameComponent extends JComponent {
 	
 	
 	Enemy enemy2 = new Enemy(25*tile, 25*tile, Color.GREEN);
-	
+	// On all of the boundary wall points, set as rectangles, so that when the player
+	// is also set as a rectangle, we can check collisions
 	private void buildWalls() {
 	    walls.clear();
 
@@ -87,6 +88,14 @@ public class GameComponent extends JComponent {
 	    walls.add(new Rectangle(tile*21, tile*12 - 2, tile*3, 4));
 	    walls.add(new Rectangle(tile*21, tile*15 - 2, tile*3, 4));
 	    walls.add(new Rectangle(tile*24 - 2, tile*21, 4, tile*3));
+	    walls.add(new Rectangle(tile*15, tile*12 - 2, tile*6, 4));
+	    walls.add(new Rectangle(tile*21, tile*15 - 2, tile*3, 4));
+	    walls.add(new Rectangle(tile*21, tile*18 - 2, tile*3, 4));
+	    walls.add(new Rectangle(tile*9,  tile*9  - 2, tile*6, 4));
+	    walls.add(new Rectangle(tile*18, tile*15 - 2, tile*3, 4));
+	    walls.add(new Rectangle(tile*24, tile*21 - 2, tile*3, 4));
+	    walls.add(new Rectangle(tile * 18, tile * 24 - 2, tile * 3, 4));
+
 	}
 	public GameComponent(GameModel model) {
 	this.model = model;
@@ -97,10 +106,10 @@ public class GameComponent extends JComponent {
 		  public void keyPressed(KeyEvent e) {
 
 			  switch (e.getKeyCode()) {
-		        case KeyEvent.VK_W -> player1.setVelocity(0, -4);
-		        case KeyEvent.VK_S -> player1.setVelocity(0, 4);
-		        case KeyEvent.VK_A -> player1.setVelocity(-4, 0);
-		        case KeyEvent.VK_D -> player1.setVelocity(4, 0);
+		        case KeyEvent.VK_W -> player1.setVelocity(0, -3);
+		        case KeyEvent.VK_S -> player1.setVelocity(0, 3);
+		        case KeyEvent.VK_A -> player1.setVelocity(-3, 0);
+		        case KeyEvent.VK_D -> player1.setVelocity(3, 0);
 		    }
 		    
 		  }
@@ -190,9 +199,9 @@ public class GameComponent extends JComponent {
 	
 	
 	
-//	g2.drawLine(0, tile * 2, tile * 10, tile * 2);   //notice pattern for lines
-//	g2.drawLine(tile * 10, tile * 2, tile*10,tile*5);
-//	g2.drawLine(tile*10,tile*5, tile*15,tile*5);  
+//1	g2.drawLine(0, tile * 2, tile * 10, tile * 2);   //notice pattern for lines
+//1	g2.drawLine(tile * 10, tile * 2, tile*10,tile*5);
+//1	g2.drawLine(tile*10,tile*5, tile*15,tile*5);  
 	g2.drawLine(tile*3,tile*3, tile*3,tile*12);
 	g2.drawLine(tile*6,tile*0, tile*6,tile*12);
 	g2.drawLine(tile*3,tile*15, tile*6,tile*15);
@@ -217,7 +226,7 @@ public class GameComponent extends JComponent {
 	g2.drawLine(tile*21,tile*12, tile*15,tile*12);
 	g2.drawLine(tile*21,tile*18, tile*21,tile*24);
 	g2.drawLine(tile*21,tile*24, tile*18,tile*24);
-//	g2.drawLine(tile*18,tile*24, tile*18,tile*27);
+//1	g2.drawLine(tile*18,tile*24, tile*18,tile*27);
 	g2.drawLine(tile*15,tile*24, tile*12,tile*24);
 	g2.drawLine(tile*12,tile*24, tile*12,tile*27);
 	g2.drawLine(tile*9,tile*27, tile*9,tile*24);

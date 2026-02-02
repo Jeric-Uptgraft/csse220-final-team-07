@@ -42,8 +42,9 @@ public class GameComponent extends JComponent {
 	public static final int WIDTH = 500;
 	public static final int HEIGHT = 200;
 	private GameModel model;
-	Player player1 = new Player(11*tile, 10*tile, Color.RED);
-	
+	//Player player1 = new Player(11*tile, 10*tile, Color.RED);
+	Player player1 = new Player(1 * tile, 1 * tile, Color.RED);
+
 	
 	Enemy enemy1 = new Enemy(0, 0, Color.GREEN);
 	
@@ -94,24 +95,21 @@ public class GameComponent extends JComponent {
 	addKeyListener(new KeyAdapter() {
 		  @Override
 		  public void keyPressed(KeyEvent e) {
-//		    switch (e.getKeyCode()) { //switch case for WASD movement for player. 
-//		    case KeyEvent.VK_W -> player1.moveUp();
-//		      case KeyEvent.VK_S -> player1.moveDown();
-//		      case KeyEvent.VK_A -> player1.moveLeft();
-//		      case KeyEvent.VK_D -> player1.moveRight();
-		      if (e.getKeyCode() == KeyEvent.VK_W) {
-			      player1.moveUp();
-			    }
-		      if (e.getKeyCode() == KeyEvent.VK_S) {
-			      player1.moveDown();
-			    }
-		      if (e.getKeyCode() == KeyEvent.VK_A) {
-			      player1.moveLeft();
-			    }
-		      if (e.getKeyCode() == KeyEvent.VK_D) {
-			      player1.moveRight();
-			    }
+
+			  switch (e.getKeyCode()) {
+		        case KeyEvent.VK_W -> player1.setVelocity(0, -4);
+		        case KeyEvent.VK_S -> player1.setVelocity(0, 4);
+		        case KeyEvent.VK_A -> player1.setVelocity(-4, 0);
+		        case KeyEvent.VK_D -> player1.setVelocity(4, 0);
+		    }
 		    
+		  }
+		  @Override
+		  public void keyReleased(KeyEvent e) {
+		      switch (e.getKeyCode()) {
+		          case KeyEvent.VK_W, KeyEvent.VK_S -> player1.stopY();
+		          case KeyEvent.VK_A, KeyEvent.VK_D -> player1.stopX();
+		      }
 		  }
 		});
 
@@ -148,7 +146,8 @@ public class GameComponent extends JComponent {
 		});
 
 	    timer.start();
-			
+	    setFocusable(true);
+	    requestFocus();	
 	}
 
 	

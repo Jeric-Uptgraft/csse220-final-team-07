@@ -155,6 +155,7 @@ public class GameComponent extends JComponent {
 
 		    enemy1.ai();
 		    enemy2.ai();
+		    player1.update();
 		    repaint();
 		});
 
@@ -242,6 +243,7 @@ public class GameComponent extends JComponent {
 	g2.drawLine(tile*21,tile*18, tile*24,tile*18);
 	g2.drawLine(tile*27,tile*21, tile*24,tile*21);
 	g2.drawLine(tile*24,tile*21, tile*24,tile*24);
+	
 
 
 	

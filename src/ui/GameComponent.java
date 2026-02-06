@@ -55,6 +55,11 @@ public class GameComponent extends JComponent {
 	Enemy enemy1 = new Enemy(0, 0, Color.GREEN);
 	
 	
+	private ArrayList<Coin> coins = new ArrayList<>();
+	
+	
+
+    
 	Enemy enemy2 = new Enemy(25*tile, 25*tile, Color.GREEN);
 	// On all of the boundary wall points, set as rectangles, so that when the player
 	// is also set as a rectangle, we can check collisions
@@ -135,6 +140,7 @@ public class GameComponent extends JComponent {
 	
 	
 		buildWalls();
+		initializeCoins();
 		
 		timer = new Timer(10, e -> {
 		    int nextX = player1.getX() + player1.getDx();
@@ -162,6 +168,16 @@ public class GameComponent extends JComponent {
 		    enemy1.ai();
 		    enemy2.ai();
 		    player1.update();
+		    for (int i = 0; i < coins.size(); i++) {
+		        // 1. Get the specific coin at index i
+		        Coin currentCoin = coins.get(i); 
+		        
+		        // 2. Check if that specific coin's bounds hit the player
+		        if (currentCoin.getBounds().intersects(player1.getBounds())) {
+		            coins.remove(i);
+		            break; 
+		        }
+		    }
 		    repaint();
 		});
 
@@ -173,6 +189,27 @@ public class GameComponent extends JComponent {
 	
 
 
+	private void initializeCoins() {
+		coins.add(new Coin(78, 135, 25, Color.YELLOW));
+	    coins.add(new Coin(18, 135, 25, Color.YELLOW));
+	    coins.add(new Coin(18, 375, 25, Color.YELLOW));
+	    coins.add(new Coin(78, 325, 25, Color.YELLOW));
+	    coins.add(new Coin(198, 500, 25, Color.YELLOW));
+	    coins.add(new Coin(258, 435, 25, Color.YELLOW));
+	    coins.add(new Coin(138, 135, 25, Color.YELLOW));
+	    coins.add(new Coin(245, 135, 25, Color.YELLOW));
+	    coins.add(new Coin(198, 275, 25, Color.YELLOW));
+	    coins.add(new Coin(258, 275, 25, Color.YELLOW));
+	    coins.add(new Coin(245, 25, 25, Color.YELLOW));
+	    coins.add(new Coin(500, 135, 25, Color.YELLOW));
+	    coins.add(new Coin(435, 135, 25, Color.YELLOW));
+	    coins.add(new Coin(500, 445, 25, Color.YELLOW));
+	    coins.add(new Coin(435, 445, 25, Color.YELLOW));
+	    coins.add(new Coin(265, 500, 25, Color.YELLOW));
+	    coins.add(new Coin(325, 195, 25, Color.YELLOW));
+	    coins.add(new Coin(318, 375, 25, Color.YELLOW));
+	    coins.add(new Coin(258, 195, 25, Color.YELLOW));
+	}
 	@Override
 	protected void paintComponent(Graphics g) {
 	super.paintComponent(g);
@@ -186,6 +223,10 @@ public class GameComponent extends JComponent {
 	player1.drawOn(g2);
 	enemy1.drawOn(g2);
 	enemy2.drawOn(g2);
+	for (Coin coin : coins) {
+        coin.drawOn(g2);
+    }
+
 
 	Color currentcolor = Color.red;
 	int tile = 20; //size of tile;
@@ -197,12 +238,12 @@ public class GameComponent extends JComponent {
 	g2.drawRect(0, 0, 600, 600);
 	
 	// draw grid lines
-	for (int x = 0; x <= 600; x += tile) {
-	    g2.drawLine(x, 0, x, 600);   // vertical grid lines draws lines across window with varying y components
-	}
-	for (int y = 0; y <= 600; y += tile) {
-	    g2.drawLine(0, y, 600, y);   // horizontal
-	}
+//	for (int x = 0; x <= 600; x += tile) {
+//	    g2.drawLine(x, 0, x, 600);   // vertical grid lines draws lines across window with varying y components
+//	}
+//	for (int y = 0; y <= 600; y += tile) {
+//	    g2.drawLine(0, y, 600, y);   // horizontal
+//	}
 	
 	//maze borders setup;
 	g2.setColor(Color.black);

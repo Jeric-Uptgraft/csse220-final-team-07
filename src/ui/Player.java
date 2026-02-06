@@ -95,6 +95,7 @@ public class Player {
 		if(y>500) y = 500;
 		
 	}
+	
 	private static void loadSpriteOnce() {
 		if (triedLoad) return;
 		triedLoad = true;
@@ -107,7 +108,9 @@ public class Player {
 		}
 		}
 
-	
+	public Rectangle getBounds() {
+	    return new Rectangle(this.x, this.y, SIZE, SIZE);
+	}
 
 	
 }

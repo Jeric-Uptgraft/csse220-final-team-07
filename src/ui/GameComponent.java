@@ -8,13 +8,18 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Line2D;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 import javax.swing.JComponent;
 import javax.swing.Timer;
 
 import model.GameModel;
+
+
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.Scanner;
 /**
  * Class: GameComponent
  * 
@@ -39,6 +44,7 @@ public class GameComponent extends JComponent {
 	private int x = start_x;
 	private int y = 20;
 	private int step = 10;
+	int row = 0;
 	public static final int WIDTH = 500;
 	public static final int HEIGHT = 200;
 	private GameModel model;
@@ -252,6 +258,5 @@ public class GameComponent extends JComponent {
 		}
 	// TODO: draw based on model state
 	
-
 }
 

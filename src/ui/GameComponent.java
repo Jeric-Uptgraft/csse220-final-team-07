@@ -5,16 +5,23 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Line2D;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 import javax.swing.JComponent;
 import javax.swing.Timer;
 
 import model.GameModel;
+import java.awt.Point;
+
+
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.Scanner;
 /**
  * Class: GameComponent
  * 
@@ -31,19 +38,23 @@ public class GameComponent extends JComponent {
 	private ArrayList<Rectangle> walls = new ArrayList<>();
 	private static final int ROWS = 30;
 	private static final int COLS = 30;
+	private ArrayList<Point> enemyPath1 = new ArrayList<>();
+	private ArrayList<Point> enemyPath2 = new ArrayList<>();
+
 
 	private Timer timer;
-
+	int playerLives = 2;
 	int tile = 20;
 	private int start_x = 250;
 	private int x = start_x;
 	private int y = 20;
 	private int step = 10;
+	int row = 0;
 	public static final int WIDTH = 500;
 	public static final int HEIGHT = 200;
 	private GameModel model;
 	//Player player1 = new Player(11*tile, 10*tile, Color.RED);
-	Player player1 = new Player(1 * tile, 1 * tile, Color.RED);
+	Player player1 = new Player(250, 250, Color.RED);
 
 	
 	Enemy enemy1 = new Enemy(0, 0, Color.GREEN);
@@ -135,7 +146,10 @@ public class GameComponent extends JComponent {
 	
 		buildWalls();
 		initializeCoins();
-		
+		loadEnemyPath();
+		enemy1.setPath(enemyPath1);
+		enemy2.setPath(enemyPath2);
+
 		timer = new Timer(10, e -> {
 		    int nextX = player1.getX() + player1.getDx();
 		    int nextY = player1.getY() + player1.getDy();
@@ -171,6 +185,20 @@ public class GameComponent extends JComponent {
 		            coins.remove(i);
 		            break; 
 		        }
+		        if (player1.getBounds().intersects(enemy1.getBounds()) //if either enemy intersects(collides) player rectangles
+		                || player1.getBounds().intersects(enemy2.getBounds())) {
+		          
+		           //resets player to center - placeholder
+		            playerLives-=1;
+		            player1.setPosition(250, 250);
+		            player1.stopX();
+		            player1.stopY();
+
+		          
+		        }
+		        if (playerLives<0)  timer.stop(); //sets player back to middle if lose all lives
+		       
+
 		    }
 		    repaint();
 		});
@@ -292,6 +320,39 @@ public class GameComponent extends JComponent {
 	 g2.setColor(currentcolor); //Set back to original color
 		}
 	// TODO: draw based on model state
+	private void loadEnemyPath() {
+	    enemyPath1.clear();
+
+	    try (Scanner scanner = new Scanner(new File("Level1.txt"))) {
+	        while (scanner.hasNextInt()) { //scans file for next integer
+	            int tileX = scanner.nextInt(); //first one on row is X coordinate
+	            int tileY = scanner.nextInt();
+
+	            int px = tileX * tile + tile / 2;
+	            int py = tileY * tile + tile / 2;
+
+	            enemyPath1.add(new Point(px, py)); //adds coordinates to array list of type Point for enemy 1
+	        }
+	    } catch (FileNotFoundException e) {
+	        e.printStackTrace();
+	    }
+
+	    try (Scanner scanner = new Scanner(new File("Level2.txt"))) { //same for enemy 2
+	        while (scanner.hasNextInt()) {
+	            int tileX = scanner.nextInt();
+	            int tileY = scanner.nextInt();
+
+	            int px = tileX * tile + tile / 2; //uses tile size to find middle of enemy x coordinate
+	            int py = tileY * tile + tile / 2;
+
+	            enemyPath2.add(new Point(px, py));
+	        }
+	    } catch (FileNotFoundException e) {
+	        e.printStackTrace();
+	    }
+	
+	
+	}
 	
 
 }

@@ -7,9 +7,11 @@ package ui;
  */
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -17,7 +19,10 @@ public class Enemy {
 	private static final int SIZE = 40;
 
 	private Color color;
-	
+	private List<Point> path;
+	private int pathIndex = 0;
+	private int speed = 2;
+	private int step = 1; // +1 forward, -1 backward
 	private int x;
     private int y;
 	private static BufferedImage sprite = null;
@@ -47,6 +52,10 @@ public class Enemy {
 		g2.draw(rect1);
 		g2.fill(rect1);	}
 		
+	}
+	public void setPath(List<Point> p) {
+	    path = p;
+	    pathIndex = 0;
 	}
 	/**
 	 * Loads the sprite given in the package
@@ -101,11 +110,51 @@ public class Enemy {
 	 * decides where the enemy moves
 	 */
 	public void ai() { 
-		double num = 10*Math.random();
-		if(num < 2) moveLeft();
-		if( 2 < num && num < 4) moveRight();
-		if(4 < num && num < 6) moveUp();
-		if(6 < num && num < 8) moveDown();
-		update();
+		if (path == null || path.isEmpty()) return;
+
+	    Point target = path.get(pathIndex); //gets current Path index
+
+	    int currentx = x + SIZE / 2; //coordinate for middle of enemy
+	    int currenty = y + SIZE / 2;
+
+	    int tx = target.x; //target x coordinate that enemy should be at
+	    int ty = target.y;
+
+	    // If close enough with respect to speed, go to next path index
+	    if (Math.abs(currentx - tx) < speed && Math.abs(currenty - ty) < speed) {
+	    	pathIndex += step;
+
+	        
+	        if (pathIndex >= path.size()) {
+	            step = -1;                 // start going backward when at end of indexes
+	            pathIndex = path.size() - 2;
+
+	        }
+	        else if (pathIndex < 0) {
+	            step = 1;                  // start going forward again
+	            pathIndex = 1;
+	        }
+	    }
+
+	    // Move horizontally
+	    if (currentx < tx)  x += speed; //move positive x direction if current x is less than target x
+	       
+	     else if (currentx > tx) x -= speed;
+
+	        
+	    
+
+	    // Move vertically
+	    if (currenty < ty)  y += speed;
+	       
+	    else if (currenty > ty) y -= speed;
+
+	    
+
+	    update();
 	}
+	public Rectangle getBounds() {
+	    return new Rectangle(this.x, this.y, SIZE, SIZE); //enemy bounding box
+	}
+
 }

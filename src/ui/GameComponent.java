@@ -40,6 +40,8 @@ public class GameComponent extends JComponent {
 	private static final int COLS = 30;
 	private ArrayList<Point> enemyPath1 = new ArrayList<>();
 	private ArrayList<Point> enemyPath2 = new ArrayList<>();
+	long now = System.currentTimeMillis();
+
 
 
 	private Timer timer;
@@ -52,6 +54,10 @@ public class GameComponent extends JComponent {
 	int row = 0;
 	public static final int WIDTH = 500;
 	public static final int HEIGHT = 200;
+
+	private long lastHitMs = 0;
+	private static final long HIT_COOLDOWN_MS = 750;
+
 	private GameModel model;
 	//Player player1 = new Player(11*tile, 10*tile, Color.RED);
 	Player player1 = new Player(250, 250, Color.RED);
@@ -66,6 +72,7 @@ public class GameComponent extends JComponent {
 
     
 	Enemy enemy2 = new Enemy(25*tile, 25*tile, Color.GREEN);
+	
 	// On all of the boundary wall points, set as rectangles, so that when the player
 	// is also set as a rectangle, we can check collisions
 	private void buildWalls() {
@@ -185,17 +192,18 @@ public class GameComponent extends JComponent {
 		            coins.remove(i);
 		            break; 
 		        }
-		        if (player1.getBounds().intersects(enemy1.getBounds()) //if either enemy intersects(collides) player rectangles
-		                || player1.getBounds().intersects(enemy2.getBounds())) {
-		          
-		           //resets player to center - placeholder
-		            playerLives-=1;
-		            player1.setPosition(250, 250);
-		            player1.stopX();
-		            player1.stopY();
+		        long now = System.currentTimeMillis();
+		        if ((player1.getBounds().intersects(enemy1.getBounds())
+		                || player1.getBounds().intersects(enemy2.getBounds()))
+		                && now - lastHitMs > HIT_COOLDOWN_MS) { // player only gets hit once about .75 seconds to avoid freezing
 
-		          
+		            lastHitMs = now;          
+		            playerLives--;
+
+		            // respawn player (example)
+		            
 		        }
+		    
 		        if (playerLives<0)  timer.stop(); //sets player back to middle if lose all lives
 		       
 
@@ -328,7 +336,7 @@ public class GameComponent extends JComponent {
 	            int tileX = scanner.nextInt(); //first one on row is X coordinate
 	            int tileY = scanner.nextInt();
 
-	            int px = tileX * tile + tile / 2;
+	            int px = tileX * tile + tile / 2;//uses tile size to find middle of enemy x coordinate
 	            int py = tileY * tile + tile / 2;
 
 	            enemyPath1.add(new Point(px, py)); //adds coordinates to array list of type Point for enemy 1
@@ -342,7 +350,7 @@ public class GameComponent extends JComponent {
 	            int tileX = scanner.nextInt();
 	            int tileY = scanner.nextInt();
 
-	            int px = tileX * tile + tile / 2; //uses tile size to find middle of enemy x coordinate
+	            int px = tileX * tile + tile / 2; 
 	            int py = tileY * tile + tile / 2;
 
 	            enemyPath2.add(new Point(px, py));

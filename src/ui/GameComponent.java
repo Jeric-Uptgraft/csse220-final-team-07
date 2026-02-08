@@ -1,8 +1,11 @@
 package ui;
 
 import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -13,6 +16,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.Timer;
 
 import model.GameModel;
@@ -45,7 +49,7 @@ public class GameComponent extends JComponent {
 
 
 	private Timer timer;
-	int playerLives = 2;
+	int playerLives = 3;
 	int tile = 20;
 	private int start_x = 250;
 	private int x = start_x;
@@ -55,10 +59,17 @@ public class GameComponent extends JComponent {
 	public static final int WIDTH = 500;
 	public static final int HEIGHT = 200;
 
+
 	private long lastHitMs = 0;
-	private static final long HIT_COOLDOWN_MS = 750;
+	private static final long HIT_COOLDOWN_MS = 1500;
+
+
+	private int coinCollected = 0;
 
 	private GameModel model;
+	private JLabel lives = new JLabel("Lives: "+ playerLives);
+	private JLabel score = new JLabel("Score: "+ coinCollected);
+	private JLabel gameOver = new JLabel("");
 	//Player player1 = new Player(11*tile, 10*tile, Color.RED);
 	Player player1 = new Player(250, 250, Color.RED);
 
@@ -190,12 +201,23 @@ public class GameComponent extends JComponent {
 		        // 2. Check if that specific coin's bounds hit the player
 		        if (currentCoin.getBounds().intersects(player1.getBounds())) {
 		            coins.remove(i);
+		            coinCollected++;
+		            //System.out.println(coinCollected);
 		            break; 
 		        }
+
 		        long now = System.currentTimeMillis();
 		        if ((player1.getBounds().intersects(enemy1.getBounds())
 		                || player1.getBounds().intersects(enemy2.getBounds()))
-		                && now - lastHitMs > HIT_COOLDOWN_MS) { // player only gets hit once about .75 seconds to avoid freezing
+		                && now - lastHitMs > HIT_COOLDOWN_MS) { // player only gets hit once about 1.50 seconds to avoid freezing
+
+		        if (player1.getBounds().intersects(enemy1.getBounds()) //if either enemy intersects(collides) player rectangles
+		                || player1.getBounds().intersects(enemy2.getBounds())) {
+		          
+		           //resets player to center - placeholder
+		           
+		           
+		            lives.setText("Lives: "+ playerLives);
 
 		            lastHitMs = now;          
 		            playerLives--;
@@ -203,13 +225,17 @@ public class GameComponent extends JComponent {
 		            // respawn player (example)
 		            
 		        }
+
 		    
-		        if (playerLives<0)  timer.stop(); //sets player back to middle if lose all lives
+		       
+
+		        if (playerLives<=0)  timer.stop(); //sets player back to middle if lose all lives
+
 		       
 
 		    }
 		    repaint();
-		});
+		}});
 
 	    timer.start();
 	    setFocusable(true);
@@ -266,6 +292,22 @@ public class GameComponent extends JComponent {
 	g2.setColor(Color.blue);
 	g2.setStroke(new BasicStroke(2));
 	g2.drawRect(0, 0, 600, 600);
+	
+	setLayout(new FlowLayout());
+	add(lives);
+	add(score);
+	
+	add(gameOver, BorderLayout.CENTER);
+	lives.setText("Lives: "+ playerLives);
+	score.setText("Score: "+ coinCollected);
+	if(playerLives <=0) {
+		
+	Font originalFont = lives.getFont();
+	Font newFont = originalFont.deriveFont(48f);
+	setFont(newFont);
+	gameOver.setText("GAME OVER");
+	}
+	
 	
 	// draw grid lines
 //	for (int x = 0; x <= 600; x += tile) {

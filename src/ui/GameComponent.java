@@ -223,6 +223,9 @@ public class GameComponent extends JComponent {
 		            playerLives--;
 
 		            // respawn player (example)
+		            if (playerLives == 0) {
+		            	
+		            }
 		            
 		        }
 

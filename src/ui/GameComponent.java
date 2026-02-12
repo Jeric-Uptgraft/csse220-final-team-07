@@ -379,7 +379,7 @@ public class GameComponent extends JComponent {
 	            int tileY = scanner.nextInt();
 
 	            int px = tileX * tile + tile / 2;//uses tile size to find middle of enemy x coordinate
-	            int py = tileY * tile + tile / 2;
+	            int py  = tileY * tile + tile / 2;
 
 	            enemyPath1.add(new Point(px, py)); //adds coordinates to array list of type Point for enemy 1
 	        }

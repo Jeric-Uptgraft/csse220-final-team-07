@@ -67,7 +67,7 @@ public class Coin {
 
 		try {
 		
-		sprite = ImageIO.read(Player.class.getResource("/ui/coin-sprite-png-4.jpg"));
+		sprite = ImageIO.read(Player.class.getResource("/ui/coin-sprite-png-4.png"));
 		} catch (IOException | IllegalArgumentException ex) {
 		sprite = null; 
 		}

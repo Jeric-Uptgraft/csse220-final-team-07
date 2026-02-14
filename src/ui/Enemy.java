@@ -18,7 +18,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 public class Enemy {
-	private static final int SIZE = 40;
+	static final int SIZE = 50;
 
 	private Color color;
 	private List<Point> path;
@@ -97,14 +97,14 @@ public class Enemy {
 		if (x < 0) {
 			x = 0; // clamp
 		}
-		if(x > 500) {
-			x = 500;
+		if(x > 600) {
+			x = 600;
 		}
 		if(y<0) {
 			y =0;
 		}
-		if(y>500) {
-			y = 500;
+		if(y>600) {
+			y = 600;
 		}
 		
 	}
@@ -157,6 +157,11 @@ public class Enemy {
 	}
 	public Rectangle getBounds() {
 	    return new Rectangle(this.x, this.y, SIZE, SIZE); //enemy bounding box
+	}
+	public void setPosition(int px, int py) {
+		// TODO Auto-generated method stub
+		 this.x = px;
+		    this.y = py;
 	}
 
 }

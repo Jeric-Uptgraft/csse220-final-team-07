@@ -22,10 +22,10 @@ import javax.imageio.ImageIO;
  */
 
 public class Player {
-	public static final int SIZE = 35;
+	public static final int SIZE = 40;
 	private int radius;
-	private int dx = 4; // direction + speed, 4 pixels per move
-	private int dy = 4; // direction + speed
+	private int dx = 0; // direction + speed, 4 pixels per move
+	private int dy = 0; // direction + speed
 	// sprite cache (shared by ALL balls)
 	private Color color;
 	private static BufferedImage sprite = null;
@@ -90,9 +90,12 @@ public class Player {
 	public void update() {
 		// Left wall
 		if (x < 0) x = 0; // clamp
-		if(x > 500) x = 500;
-		if(y<0) y =0;
-		if(y>500) y = 500;
+		if(x > 550) x = 550;
+		int max = 600 - SIZE;
+
+		if (y < 0) y = 0;
+		if (y > max) y = max;
+
 		
 	}
 	

@@ -8,13 +8,16 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Line2D;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.Timer;
@@ -45,7 +48,12 @@ public class GameComponent extends JComponent {
 	private ArrayList<Point> enemyPath1 = new ArrayList<>();
 	private ArrayList<Point> enemyPath2 = new ArrayList<>();
 	long now = System.currentTimeMillis();
+	private final char[][] grid = new char[ROWS][COLS];
 
+	private static Image background;
+	private static boolean triedLoadBackground = false;
+	private static Image wallSprite;
+	private static boolean triedLoadWall = false;
 
 
 	private Timer timer;
@@ -56,8 +64,8 @@ public class GameComponent extends JComponent {
 	private int y = 20;
 	private int step = 10;
 	int row = 0;
-	public static final int WIDTH = 500;
-	public static final int HEIGHT = 200;
+	public static final int WIDTH = 600;
+	public static final int HEIGHT = 600;
 
 
 	private long lastHitMs = 0;
@@ -76,7 +84,10 @@ public class GameComponent extends JComponent {
 	
 	Enemy enemy1 = new Enemy(0, 0, Color.GREEN);
 	
-	
+	private ArrayList<Point> patrolTiles1 = new ArrayList<>();
+	private ArrayList<Point> patrolTiles2 = new ArrayList<>();
+
+
 	private ArrayList<Coin> coins = new ArrayList<>();
 	
 	
@@ -162,11 +173,11 @@ public class GameComponent extends JComponent {
 
 	
 	
-		buildWalls();
-		initializeCoins();
-		loadEnemyPath();
-		enemy1.setPath(enemyPath1);
-		enemy2.setPath(enemyPath2);
+		loadLevel("LEVEL1.txt");
+		//initializeCoins();
+	//	loadEnemyPath();
+		//enemy1.setPath(enemyPath1);
+		//enemy2.setPath(enemyPath2);
 
 		timer = new Timer(10, e -> {
 		    int nextX = player1.getX() + player1.getDx();
@@ -273,12 +284,42 @@ public class GameComponent extends JComponent {
 	protected void paintComponent(Graphics g) {
 	super.paintComponent(g);
 	Graphics2D g2 = (Graphics2D) g;
+	loadBackgroundOnce(); 
+	loadWallSpriteOnce();
+
+if (background != null) {
+    g2.drawImage(background, 0, 0, getWidth(), getHeight(), null);
+} else {
+    // fallback so you can tell it's failing
+    g2.setColor(Color.DARK_GRAY);
+    g2.fillRect(0, 0, getWidth(), getHeight());
+}
 
 	// Minimal placeholder to test  it’s running
 	g2.setColor(new Color(255, 0, 0, 120)); // translucent red
+
+	
+//	for (Rectangle wall : walls) {
+//	    g2.fill(wall);
+//	}
 	for (Rectangle wall : walls) {
-	    g2.fill(wall);
+
+	    if (wallSprite != null) {
+	        g2.drawImage(
+	            wallSprite,
+	            wall.x,
+	            wall.y,
+	            wall.width,
+	            wall.height,
+	            null
+	        );
+	    } else {
+	        // fallback if image fails
+	        g2.setColor(Color.GRAY);
+	        g2.fill(wall);
+	    }
 	}
+
 	player1.drawOn(g2);
 	enemy1.drawOn(g2);
 	enemy2.drawOn(g2);
@@ -292,9 +333,9 @@ public class GameComponent extends JComponent {
 	g.setColor(Color.BLACK);
 	
 	//Grid lines setup
-	g2.setColor(Color.blue);
-	g2.setStroke(new BasicStroke(2));
-	g2.drawRect(0, 0, 600, 600);
+	//g2.setColor(Color.blue);
+	//g2.setStroke(new BasicStroke(2));
+	//g2.drawRect(0, 0, 600, 600);
 	
 	setLayout(new FlowLayout());
 	add(lives);
@@ -329,43 +370,43 @@ public class GameComponent extends JComponent {
 //1	g2.drawLine(0, tile * 2, tile * 10, tile * 2);   //notice pattern for lines
 //1	g2.drawLine(tile * 10, tile * 2, tile*10,tile*5);
 //1	g2.drawLine(tile*10,tile*5, tile*15,tile*5);  
-	g2.drawLine(tile*3,tile*3, tile*3,tile*12);
-	g2.drawLine(tile*6,tile*0, tile*6,tile*12);
-	g2.drawLine(tile*3,tile*15, tile*6,tile*15);
-	g2.drawLine(tile*3,tile*15, tile*3,tile*21);
-	g2.drawLine(tile*0,tile*21, tile*3,tile*21);
-	g2.drawLine(tile*3,tile*24, tile*6,tile*24);
-	g2.drawLine(tile*6,tile*24, tile*6,tile*18);
-	g2.drawLine(tile*6,tile*18, tile*9,tile*18);
-	g2.drawLine(tile*9,tile*18, tile*9,tile*3);
-	g2.drawLine(tile*9,tile*3, tile*18,tile*3);
-	g2.drawLine(tile*18,tile*3, tile*18,tile*6);
-	g2.drawLine(tile*21,tile*0, tile*21,tile*6);
-	g2.drawLine(tile*21,tile*9, tile*18,tile*9);
-	g2.drawLine(tile*15,tile*6, tile*12,tile*6);
-	g2.drawLine(tile*15,tile*6, tile*15,tile*9);
-	g2.drawLine(tile*15,tile*9, tile*9,tile*9);
-	g2.drawLine(tile*12,tile*12, tile*12,tile*21);
-	g2.drawLine(tile*15,tile*9, tile*15,tile*18);
-	g2.drawLine(tile*9,tile*21, tile*18,tile*21);
-	g2.drawLine(tile*18,tile*21, tile*18,tile*15);
-	g2.drawLine(tile*18,tile*15, tile*21,tile*15);
-	g2.drawLine(tile*21,tile*12, tile*15,tile*12);
-	g2.drawLine(tile*21,tile*18, tile*21,tile*24);
-	g2.drawLine(tile*21,tile*24, tile*18,tile*24);
-//1	g2.drawLine(tile*18,tile*24, tile*18,tile*27);
-	g2.drawLine(tile*15,tile*24, tile*12,tile*24);
-	g2.drawLine(tile*12,tile*24, tile*12,tile*27);
-	g2.drawLine(tile*9,tile*27, tile*9,tile*24);
-	g2.drawLine(tile*15,tile*24, tile*15,tile*21);
-	g2.drawLine(tile*24,tile*3, tile*24,tile*9);
-	g2.drawLine(tile*24,tile*9, tile*21,tile*9);
-	g2.drawLine(tile*21,tile*12, tile*24,tile*12);
-	g2.drawLine(tile*24,tile*15, tile*21,tile*15);
-	g2.drawLine(tile*21,tile*18, tile*24,tile*18);
-	g2.drawLine(tile*27,tile*21, tile*24,tile*21);
-	g2.drawLine(tile*24,tile*21, tile*24,tile*24);
-	
+//	g2.drawLine(tile*3,tile*3, tile*3,tile*12);
+//	g2.drawLine(tile*6,tile*0, tile*6,tile*12);
+//	g2.drawLine(tile*3,tile*15, tile*6,tile*15);
+//	g2.drawLine(tile*3,tile*15, tile*3,tile*21);
+//	g2.drawLine(tile*0,tile*21, tile*3,tile*21);
+//	g2.drawLine(tile*3,tile*24, tile*6,tile*24);
+//	g2.drawLine(tile*6,tile*24, tile*6,tile*18);
+//	g2.drawLine(tile*6,tile*18, tile*9,tile*18);
+//	g2.drawLine(tile*9,tile*18, tile*9,tile*3);
+//	g2.drawLine(tile*9,tile*3, tile*18,tile*3);
+//	g2.drawLine(tile*18,tile*3, tile*18,tile*6);
+//	g2.drawLine(tile*21,tile*0, tile*21,tile*6);
+//	g2.drawLine(tile*21,tile*9, tile*18,tile*9);
+//	g2.drawLine(tile*15,tile*6, tile*12,tile*6);
+//	g2.drawLine(tile*15,tile*6, tile*15,tile*9);
+//	g2.drawLine(tile*15,tile*9, tile*9,tile*9);
+//	g2.drawLine(tile*12,tile*12, tile*12,tile*21);
+//	g2.drawLine(tile*15,tile*9, tile*15,tile*18);
+//	g2.drawLine(tile*9,tile*21, tile*18,tile*21);
+//	g2.drawLine(tile*18,tile*21, tile*18,tile*15);
+//	g2.drawLine(tile*18,tile*15, tile*21,tile*15);
+//	g2.drawLine(tile*21,tile*12, tile*15,tile*12);
+//	g2.drawLine(tile*21,tile*18, tile*21,tile*24);
+//	g2.drawLine(tile*21,tile*24, tile*18,tile*24);
+////1	g2.drawLine(tile*18,tile*24, tile*18,tile*27);
+//	g2.drawLine(tile*15,tile*24, tile*12,tile*24);
+//	g2.drawLine(tile*12,tile*24, tile*12,tile*27);
+//	g2.drawLine(tile*9,tile*27, tile*9,tile*24);
+//	g2.drawLine(tile*15,tile*24, tile*15,tile*21);
+//	g2.drawLine(tile*24,tile*3, tile*24,tile*9);
+//	g2.drawLine(tile*24,tile*9, tile*21,tile*9);
+//	g2.drawLine(tile*21,tile*12, tile*24,tile*12);
+//	g2.drawLine(tile*24,tile*15, tile*21,tile*15);
+//	g2.drawLine(tile*21,tile*18, tile*24,tile*18);
+//	g2.drawLine(tile*27,tile*21, tile*24,tile*21);
+//	g2.drawLine(tile*24,tile*21, tile*24,tile*24);
+//	
 
 
 	
@@ -373,40 +414,125 @@ public class GameComponent extends JComponent {
 	 g2.setColor(currentcolor); //Set back to original color
 		}
 	// TODO: draw based on model state
-	private void loadEnemyPath() {
-	    enemyPath1.clear();
-
-	    try (Scanner scanner = new Scanner(new File("Level1.txt"))) {
-	        while (scanner.hasNextInt()) { //scans file for next integer
-	            int tileX = scanner.nextInt(); //first one on row is X coordinate
-	            int tileY = scanner.nextInt();
-
-	            int px = tileX * tile + tile / 2;//uses tile size to find middle of enemy x coordinate
-	            int py  = tileY * tile + tile / 2;
-
-	            enemyPath1.add(new Point(px, py)); //adds coordinates to array list of type Point for enemy 1
-	        }
-	    } catch (FileNotFoundException e) {
-	        e.printStackTrace();
-	    }
-
-	    try (Scanner scanner = new Scanner(new File("Level2.txt"))) { //same for enemy 2
-	        while (scanner.hasNextInt()) {
-	            int tileX = scanner.nextInt();
-	            int tileY = scanner.nextInt();
-
-	            int px = tileX * tile + tile / 2; 
-	            int py = tileY * tile + tile / 2;
-
-	            enemyPath2.add(new Point(px, py));
-	        }
-	    } catch (FileNotFoundException e) {
-	        e.printStackTrace();
-	    }
 	
+	
+	private void loadLevel(String filename) {
+	    walls.clear();
+	    coins.clear();
+	    patrolTiles1.clear();
+	    patrolTiles2.clear();
+	    // optional: if you want score to reset per level load
+	    coinCollected = 0;
+
+	    int enemyCount = 0;
+
+	    // default everything to empty
+	    for (int r = 0; r < ROWS; r++) {
+	        for (int c = 0; c < COLS; c++) {
+	            grid[r][c] = '.';
+	        }
+	    }
+
+	    int r = 0;
+	    try (Scanner scanner = new Scanner(new File(filename))) {
+	        while (scanner.hasNextLine() && r < ROWS) {
+	            String line = scanner.nextLine();
+
+	            while (line.length() < COLS) line += ".";
+	            if (line.length() > COLS) line = line.substring(0, COLS);
+
+	            for (int c = 0; c < COLS; c++) {
+	                char ch = line.charAt(c);
+	                grid[r][c] = ch;
+
+	                int px = c * tile;
+	                int py = r * tile;
+
+	                switch (ch) {
+	                    case '*': // wall
+	                        walls.add(new Rectangle(px, py, tile, tile));
+	                        break;
+	                        
+	                    case 'B': // enemy1 patrol tile
+	                        patrolTiles1.add(new Point(c, r));
+	                        break;
+
+	                    case 'D': // enemy2 patrol tile
+	                        patrolTiles2.add(new Point(c, r));
+	                        break;
+
+
+
+	                    case 'P': // player spawn
+	                        player1.setPosition(px, py);
+	                        break;
+
+	                    case 'C': // coin spawn (centered in tile)
+	                        coins.add(new Coin(px + tile/2 - 12, py + tile/2 - 12, 25, Color.YELLOW));
+	                        break;
+
+	                    case 'E': {
+	                        int ex = px + tile/2 - Enemy.SIZE/2;
+	                        int ey = py + tile/2 - Enemy.SIZE/2;
+
+	                        if (enemyCount == 0) enemy1.setPosition(ex, ey);
+	                        else if (enemyCount == 1) enemy2.setPosition(ex, ey);
+
+	                        enemyCount++;
+	                        break;
+	                    }
+
+	                    default:
+	                        // '.' or anything else
+	                        break;
+	                }
+	            }
+	            r++;
+	        }
+	    } catch (FileNotFoundException e) {
+	        e.printStackTrace();
+	   
+	    
+	    }
+	    ArrayList<Point> path1 = new ArrayList<>();
+	    for (Point t : patrolTiles1) {
+	        int cx = t.x * tile + tile/2;
+	        int cy = t.y * tile + tile/2;
+	        path1.add(new Point(cx, cy));
+	    }
+	    enemy1.setPath(path1);
+
+	    ArrayList<Point> path2 = new ArrayList<>();
+	    for (Point t : patrolTiles2) {
+	        int cx = t.x * tile + tile/2;
+	        int cy = t.y * tile + tile/2;
+	        path2.add(new Point(cx, cy));
+	    }
+	    enemy2.setPath(path2);
+
 	
 	}
-	
+
+	private static void loadBackgroundOnce() {
+	    if (triedLoadBackground) return;
+	    triedLoadBackground = true;
+
+	    try {
+	        background = ImageIO.read(GameComponent.class.getResource("/ui/back3.png"));
+	    } catch (IOException | IllegalArgumentException ex) {
+	        background = null;   // safe fallback
+	    }
+	}
+	private static void loadWallSpriteOnce() {
+	    if (triedLoadWall) return;
+	    triedLoadWall = true;
+
+	    try {
+	        wallSprite = ImageIO.read(GameComponent.class.getResource("/ui/wall.png"));
+	    } catch (IOException | IllegalArgumentException e) {
+	        wallSprite = null; // fallback safe
+	    }
+	}
 
 }
 

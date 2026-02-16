@@ -535,7 +535,13 @@ public class GameComponent extends JComponent {
 
 	}
 	private void nextLevel(){
-		
+		playerLives = 3;
+		coinCollected = 0;
+		gameState = GameState.PLAYING;
+		endMessage.setVisible(false);
+		restartButton.setVisible(false);
+		loadLevel("Level2.txt");
+		timer.start();
 	}
 
 }

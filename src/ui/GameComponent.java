@@ -153,9 +153,19 @@ public class GameComponent extends JComponent {
 		// position the text for lives, score, end message, and restart button
 		setLayout(null);
 
-		lives.setBounds(10, 10, 200, 30);
-		score.setBounds(10, 40, 200, 30);
+		Font statsFont = new Font("Arial", Font.BOLD, 24);
 
+		lives.setBounds(200, 10, 200, 30);
+		score.setBounds(200, 40, 200, 30);
+
+		lives.setHorizontalAlignment(JLabel.CENTER);
+		score.setHorizontalAlignment(JLabel.CENTER);
+
+		lives.setFont(statsFont);
+		score.setFont(statsFont);
+
+		lives.setForeground(Color.BLACK);
+		score.setForeground(Color.BLACK)
 		endMessage.setBounds(0, 200, 600, 60);
 		endMessage.setHorizontalAlignment(JLabel.CENTER);
 		endMessage.setFont(new Font("Arial", Font.BOLD, 48));

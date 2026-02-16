@@ -174,7 +174,7 @@ public class GameComponent extends JComponent {
 		addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-
+				if (gameState != GameState.PLAYING) return;
 //			  switch (e.getKeyCode()) {
 //		        case KeyEvent.VK_W -> player1.setVelocity(0, -3);
 //		        case KeyEvent.VK_S -> player1.setVelocity(0, 3);
@@ -363,20 +363,10 @@ public class GameComponent extends JComponent {
 		// g2.setStroke(new BasicStroke(2));
 		// g2.drawRect(0, 0, 600, 600);
 
-		setLayout(new FlowLayout());
-		add(lives);
-		add(score);
-
-		add(gameOver, BorderLayout.CENTER);
+		
 		lives.setText("Lives: " + playerLives);
 		score.setText("Score: " + coinCollected);
-		if (playerLives <= 0) {
-
-			Font originalFont = lives.getFont();
-			Font newFont = originalFont.deriveFont(48f);
-			setFont(newFont);
-			gameOver.setText("GAME OVER");
-		}
+		
 
 		// draw grid lines
 //	for (int x = 0; x <= 600; x += tile) {

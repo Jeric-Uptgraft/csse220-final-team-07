@@ -540,6 +540,7 @@ public class GameComponent extends JComponent {
 		gameState = GameState.PLAYING;
 		endMessage.setVisible(false);
 		restartButton.setVisible(false);
+		nlevelButton.setVisible(false);
 		loadLevel("LEVEL2.txt");
 		timer.start();
 	}

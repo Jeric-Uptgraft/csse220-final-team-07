@@ -165,7 +165,7 @@ public class GameComponent extends JComponent {
 		score.setFont(statsFont);
 
 		lives.setForeground(Color.BLACK);
-		score.setForeground(Color.BLACK)
+		score.setForeground(Color.BLACK);
 		endMessage.setBounds(0, 200, 600, 60);
 		endMessage.setHorizontalAlignment(JLabel.CENTER);
 		endMessage.setFont(new Font("Arial", Font.BOLD, 48));

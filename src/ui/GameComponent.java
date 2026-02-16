@@ -184,7 +184,8 @@ public class GameComponent extends JComponent {
 		addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (gameState != GameState.PLAYING) return;
+				if (gameState != GameState.PLAYING)
+					return;
 //			  switch (e.getKeyCode()) {
 //		        case KeyEvent.VK_W -> player1.setVelocity(0, -3);
 //		        case KeyEvent.VK_S -> player1.setVelocity(0, 3);
@@ -217,6 +218,8 @@ public class GameComponent extends JComponent {
 		// enemy2.setPath(enemyPath2);
 
 		timer = new Timer(10, e -> {
+			if (gameState != GameState.PLAYING)
+				return;
 			int nextX = player1.getX() + player1.getDx();
 			int nextY = player1.getY() + player1.getDy();
 
@@ -248,6 +251,7 @@ public class GameComponent extends JComponent {
 					// System.out.println(coinCollected);
 					break;
 				}
+			}
 
 				long now = System.currentTimeMillis();
 				if ((player1.getBounds().intersects(enemy1.getBounds())
@@ -262,14 +266,14 @@ public class GameComponent extends JComponent {
 																														// to
 																														// avoid
 																														// freezing
-
-					if (player1.getBounds().intersects(enemy1.getBounds()) // if either enemy intersects(collides)
+				
+					//if (player1.getBounds().intersects(enemy1.getBounds()) // if either enemy intersects(collides)
 																			// player rectangles
-							|| player1.getBounds().intersects(enemy2.getBounds())) {
+						//	|| player1.getBounds().intersects(enemy2.getBounds())) {
 
 						// resets player to center - placeholder
 
-						lives.setText("Lives: " + playerLives);
+						//lives.setText("Lives: " + playerLives);
 
 						lastHitMs = now;
 						playerLives--;
@@ -277,29 +281,30 @@ public class GameComponent extends JComponent {
 					}
 
 					if (playerLives <= 0) {
-					    gameState = GameState.LOSE;
-					    timer.stop();// sets player back to middle if lose all lives
+						gameState = GameState.LOSE;
+						timer.stop();// sets player back to middle if lose all lives
 
-					    endMessage.setText("YOU LOSE");
-					    endMessage.setVisible(true);
-					    restartButton.setVisible(true);
+						endMessage.setText("YOU LOSE");
+						endMessage.setVisible(true);
+						restartButton.setVisible(true);
 					}
 					if (coins.size() == 0 && gameState == GameState.PLAYING) {
-					    gameState = GameState.WIN;
-					    timer.stop();
+						gameState = GameState.WIN;
+						timer.stop();
 
-					    endMessage.setText("YOU WIN!");
-					    endMessage.setVisible(true);
-					    restartButton.setVisible(true);
+						endMessage.setText("YOU WIN!");
+						endMessage.setVisible(true);
+						restartButton.setVisible(true);
 					}
 
-				}
+				
 				repaint();
-			}
+			
 		});
 
-		timer.start();
-		setFocusable(true);
+	timer.start();
+
+	setFocusable(true);
 		requestFocus();
 	}
 
@@ -373,10 +378,8 @@ public class GameComponent extends JComponent {
 		// g2.setStroke(new BasicStroke(2));
 		// g2.drawRect(0, 0, 600, 600);
 
-		
 		lives.setText("Lives: " + playerLives);
 		score.setText("Score: " + coinCollected);
-		
 
 		// draw grid lines
 //	for (int x = 0; x <= 600; x += tile) {
@@ -514,15 +517,16 @@ public class GameComponent extends JComponent {
 			wallSprite = null; // fallback safe
 		}
 	}
+
 	private void restartGame() {
 		playerLives = 3;
 		coinCollected = 0;
 		gameState = GameState.PLAYING;
 		endMessage.setVisible(false);
 		restartButton.setVisible(false);
-		loadLevel("Level2.txt");
+		loadLevel("Level1.txt");
 		timer.start();
-		
+
 	}
 
 }

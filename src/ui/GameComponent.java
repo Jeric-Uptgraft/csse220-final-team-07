@@ -301,7 +301,7 @@ public class GameComponent extends JComponent {
 						restartButton.setVisible(true);
 						nlevelButton.setVisible(true);
 					}
-
+					
 				
 				repaint();
 			
@@ -469,6 +469,9 @@ public class GameComponent extends JComponent {
 						enemyCount++;
 						break;
 					}
+					
+					case 'X':
+						Point Exit_tile = new Point(px,py);
 
 					default:
 						// '.' or anything else

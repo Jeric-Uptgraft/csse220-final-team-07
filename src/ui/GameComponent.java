@@ -52,8 +52,7 @@ public class GameComponent extends JComponent {
 	private ArrayList<Rectangle> walls = new ArrayList<>();
 	private static final int ROWS = 30;
 	private static final int COLS = 30;
-	private ArrayList<Point> enemyPath1 = new ArrayList<>();
-	private ArrayList<Point> enemyPath2 = new ArrayList<>();
+	
 	long now = System.currentTimeMillis();
 	private final char[][] grid = new char[ROWS][COLS];
 
@@ -101,51 +100,51 @@ public class GameComponent extends JComponent {
 	// On all of the boundary wall points, set as rectangles, so that when the
 	// player
 	// is also set as a rectangle, we can check collisions
-	private void buildWalls() {
-		walls.clear();
-
-		walls.add(new Rectangle(tile * 3 - 2, tile * 3, 4, tile * 9));
-		walls.add(new Rectangle(tile * 6 - 2, tile * 0, 4, tile * 12));
-		walls.add(new Rectangle(tile * 3, tile * 15 - 2, tile * 3, 4));
-		walls.add(new Rectangle(tile * 3 - 2, tile * 15, 4, tile * 6));
-		walls.add(new Rectangle(tile * 0, tile * 21 - 2, tile * 3, 4));
-		walls.add(new Rectangle(tile * 3, tile * 24 - 2, tile * 3, 4));
-		walls.add(new Rectangle(tile * 6 - 2, tile * 18, 4, tile * 6));
-		walls.add(new Rectangle(tile * 6, tile * 18 - 2, tile * 3, 4));
-		walls.add(new Rectangle(tile * 9 - 2, tile * 3, 4, tile * 15));
-		walls.add(new Rectangle(tile * 9, tile * 3 - 2, tile * 9, 4));
-		walls.add(new Rectangle(tile * 18 - 2, tile * 3, 4, tile * 3));
-		walls.add(new Rectangle(tile * 21 - 2, tile * 0, 4, tile * 6));
-		walls.add(new Rectangle(tile * 18, tile * 9 - 2, tile * 3, 4));
-		walls.add(new Rectangle(tile * 12, tile * 6 - 2, tile * 3, 4));
-		walls.add(new Rectangle(tile * 15 - 2, tile * 6, 4, tile * 3));
-		walls.add(new Rectangle(tile * 15, tile * 9 - 2, tile * 6, 4));
-		walls.add(new Rectangle(tile * 12 - 2, tile * 12, 4, tile * 9));
-		walls.add(new Rectangle(tile * 15 - 2, tile * 9, 4, tile * 9));
-		walls.add(new Rectangle(tile * 9, tile * 21 - 2, tile * 9, 4));
-		walls.add(new Rectangle(tile * 18 - 2, tile * 15, 4, tile * 6));
-		walls.add(new Rectangle(tile * 18, tile * 15 - 2, tile * 3, 4));
-		walls.add(new Rectangle(tile * 15, tile * 12 - 2, tile * 6, 4));
-		walls.add(new Rectangle(tile * 21 - 2, tile * 18, 4, tile * 6));
-		walls.add(new Rectangle(tile * 21, tile * 24 - 2, tile * 3, 4));
-		walls.add(new Rectangle(tile * 12, tile * 24 - 2, tile * 3, 4));
-		walls.add(new Rectangle(tile * 12 - 2, tile * 24, 4, tile * 3));
-		walls.add(new Rectangle(tile * 9 - 2, tile * 24, 4, tile * 3));
-		walls.add(new Rectangle(tile * 15 - 2, tile * 21, 4, tile * 3));
-		walls.add(new Rectangle(tile * 24 - 2, tile * 3, 4, tile * 6));
-		walls.add(new Rectangle(tile * 21, tile * 9 - 2, tile * 3, 4));
-		walls.add(new Rectangle(tile * 21, tile * 12 - 2, tile * 3, 4));
-		walls.add(new Rectangle(tile * 21, tile * 15 - 2, tile * 3, 4));
-		walls.add(new Rectangle(tile * 24 - 2, tile * 21, 4, tile * 3));
-		walls.add(new Rectangle(tile * 15, tile * 12 - 2, tile * 6, 4));
-		walls.add(new Rectangle(tile * 21, tile * 15 - 2, tile * 3, 4));
-		walls.add(new Rectangle(tile * 21, tile * 18 - 2, tile * 3, 4));
-		walls.add(new Rectangle(tile * 9, tile * 9 - 2, tile * 6, 4));
-		walls.add(new Rectangle(tile * 18, tile * 15 - 2, tile * 3, 4));
-		walls.add(new Rectangle(tile * 24, tile * 21 - 2, tile * 3, 4));
-		walls.add(new Rectangle(tile * 18, tile * 24 - 2, tile * 3, 4));
-
-	}
+//	private void buildWalls() {
+//		walls.clear();
+//
+//		walls.add(new Rectangle(tile * 3 - 2, tile * 3, 4, tile * 9));
+//		walls.add(new Rectangle(tile * 6 - 2, tile * 0, 4, tile * 12));
+//		walls.add(new Rectangle(tile * 3, tile * 15 - 2, tile * 3, 4));
+//		walls.add(new Rectangle(tile * 3 - 2, tile * 15, 4, tile * 6));
+//		walls.add(new Rectangle(tile * 0, tile * 21 - 2, tile * 3, 4));
+//		walls.add(new Rectangle(tile * 3, tile * 24 - 2, tile * 3, 4));
+//		walls.add(new Rectangle(tile * 6 - 2, tile * 18, 4, tile * 6));
+//		walls.add(new Rectangle(tile * 6, tile * 18 - 2, tile * 3, 4));
+//		walls.add(new Rectangle(tile * 9 - 2, tile * 3, 4, tile * 15));
+//		walls.add(new Rectangle(tile * 9, tile * 3 - 2, tile * 9, 4));
+//		walls.add(new Rectangle(tile * 18 - 2, tile * 3, 4, tile * 3));
+//		walls.add(new Rectangle(tile * 21 - 2, tile * 0, 4, tile * 6));
+//		walls.add(new Rectangle(tile * 18, tile * 9 - 2, tile * 3, 4));
+//		walls.add(new Rectangle(tile * 12, tile * 6 - 2, tile * 3, 4));
+//		walls.add(new Rectangle(tile * 15 - 2, tile * 6, 4, tile * 3));
+//		walls.add(new Rectangle(tile * 15, tile * 9 - 2, tile * 6, 4));
+//		walls.add(new Rectangle(tile * 12 - 2, tile * 12, 4, tile * 9));
+//		walls.add(new Rectangle(tile * 15 - 2, tile * 9, 4, tile * 9));
+//		walls.add(new Rectangle(tile * 9, tile * 21 - 2, tile * 9, 4));
+//		walls.add(new Rectangle(tile * 18 - 2, tile * 15, 4, tile * 6));
+//		walls.add(new Rectangle(tile * 18, tile * 15 - 2, tile * 3, 4));
+//		walls.add(new Rectangle(tile * 15, tile * 12 - 2, tile * 6, 4));
+//		walls.add(new Rectangle(tile * 21 - 2, tile * 18, 4, tile * 6));
+//		walls.add(new Rectangle(tile * 21, tile * 24 - 2, tile * 3, 4));
+//		walls.add(new Rectangle(tile * 12, tile * 24 - 2, tile * 3, 4));
+//		walls.add(new Rectangle(tile * 12 - 2, tile * 24, 4, tile * 3));
+//		walls.add(new Rectangle(tile * 9 - 2, tile * 24, 4, tile * 3));
+//		walls.add(new Rectangle(tile * 15 - 2, tile * 21, 4, tile * 3));
+//		walls.add(new Rectangle(tile * 24 - 2, tile * 3, 4, tile * 6));
+//		walls.add(new Rectangle(tile * 21, tile * 9 - 2, tile * 3, 4));
+//		walls.add(new Rectangle(tile * 21, tile * 12 - 2, tile * 3, 4));
+//		walls.add(new Rectangle(tile * 21, tile * 15 - 2, tile * 3, 4));
+//		walls.add(new Rectangle(tile * 24 - 2, tile * 21, 4, tile * 3));
+//		walls.add(new Rectangle(tile * 15, tile * 12 - 2, tile * 6, 4));
+//		walls.add(new Rectangle(tile * 21, tile * 15 - 2, tile * 3, 4));
+//		walls.add(new Rectangle(tile * 21, tile * 18 - 2, tile * 3, 4));
+//		walls.add(new Rectangle(tile * 9, tile * 9 - 2, tile * 6, 4));
+//		walls.add(new Rectangle(tile * 18, tile * 15 - 2, tile * 3, 4));
+//		walls.add(new Rectangle(tile * 24, tile * 21 - 2, tile * 3, 4));
+//		walls.add(new Rectangle(tile * 18, tile * 24 - 2, tile * 3, 4));
+//
+//	}
 
 	public GameComponent(GameModel model) {
 		this.model = model;
@@ -314,27 +313,27 @@ public class GameComponent extends JComponent {
 		requestFocus();
 	}
 
-	private void initializeCoins() {
-		coins.add(new Coin(78, 135, 25, Color.YELLOW));
-		coins.add(new Coin(18, 135, 25, Color.YELLOW));
-		coins.add(new Coin(18, 375, 25, Color.YELLOW));
-		coins.add(new Coin(78, 325, 25, Color.YELLOW));
-		coins.add(new Coin(198, 500, 25, Color.YELLOW));
-		coins.add(new Coin(258, 435, 25, Color.YELLOW));
-		coins.add(new Coin(138, 135, 25, Color.YELLOW));
-		coins.add(new Coin(245, 135, 25, Color.YELLOW));
-		coins.add(new Coin(198, 275, 25, Color.YELLOW));
-		coins.add(new Coin(258, 275, 25, Color.YELLOW));
-		coins.add(new Coin(245, 25, 25, Color.YELLOW));
-		coins.add(new Coin(500, 135, 25, Color.YELLOW));
-		coins.add(new Coin(435, 135, 25, Color.YELLOW));
-		coins.add(new Coin(500, 445, 25, Color.YELLOW));
-		coins.add(new Coin(435, 445, 25, Color.YELLOW));
-		coins.add(new Coin(265, 500, 25, Color.YELLOW));
-		coins.add(new Coin(325, 195, 25, Color.YELLOW));
-		coins.add(new Coin(318, 375, 25, Color.YELLOW));
-		coins.add(new Coin(258, 195, 25, Color.YELLOW));
-	}
+//	private void initializeCoins() {
+//		coins.add(new Coin(78, 135, 25, Color.YELLOW));
+//		coins.add(new Coin(18, 135, 25, Color.YELLOW));
+//		coins.add(new Coin(18, 375, 25, Color.YELLOW));
+//		coins.add(new Coin(78, 325, 25, Color.YELLOW));
+//		coins.add(new Coin(198, 500, 25, Color.YELLOW));
+//		coins.add(new Coin(258, 435, 25, Color.YELLOW));
+//		coins.add(new Coin(138, 135, 25, Color.YELLOW));
+//		coins.add(new Coin(245, 135, 25, Color.YELLOW));
+//		coins.add(new Coin(198, 275, 25, Color.YELLOW));
+//		coins.add(new Coin(258, 275, 25, Color.YELLOW));
+//		coins.add(new Coin(245, 25, 25, Color.YELLOW));
+//		coins.add(new Coin(500, 135, 25, Color.YELLOW));
+//		coins.add(new Coin(435, 135, 25, Color.YELLOW));
+//		coins.add(new Coin(500, 445, 25, Color.YELLOW));
+//		coins.add(new Coin(435, 445, 25, Color.YELLOW));
+//		coins.add(new Coin(265, 500, 25, Color.YELLOW));
+//		coins.add(new Coin(325, 195, 25, Color.YELLOW));
+//		coins.add(new Coin(318, 375, 25, Color.YELLOW));
+//		coins.add(new Coin(258, 195, 25, Color.YELLOW));
+//	}
 
 	@Override
 	protected void paintComponent(Graphics g) {
@@ -421,7 +420,7 @@ public class GameComponent extends JComponent {
 		}
 
 		int r = 0;
-		try (Scanner scanner = new Scanner(new File(filename))) {
+		try (Scanner scanner = new Scanner(new File(filename))) { // switch case knowledge from ECE160 - CT
 			while (scanner.hasNextLine() && r < ROWS) {
 				String line = scanner.nextLine();
 

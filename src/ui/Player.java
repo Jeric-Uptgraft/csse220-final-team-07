@@ -22,7 +22,7 @@ import javax.imageio.ImageIO;
  */
 
 public class Player {
-	public static final int SIZE = 40;
+	public static final int SIZE = 35;
 	private int radius;
 	private int dx = 0; // direction + speed, 4 pixels per move
 	private int dy = 0; // direction + speed

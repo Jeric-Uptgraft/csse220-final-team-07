@@ -164,7 +164,18 @@ public class Enemy {
 		    this.y = py;
 	}
 	public void resetPath() {
-		pathIndex = 0;
+		if (path == null || path.isEmpty()) return;
+		int nearest = 0;
+		double bestDist = Double.MAX_VALUE;
+		for (int i = 0; i < path.size(); i++) {
+			double dist = Math.hypot(path.get(i).x - (x + SIZE / 2),
+			                        path.get(i).y - (y + SIZE / 2));
+			if (dist < bestDist) {
+				bestDist = dist;
+				nearest = i;
+			}
+		}
+		pathIndex = nearest;
 	}
 	public int getX() {
 		return x;

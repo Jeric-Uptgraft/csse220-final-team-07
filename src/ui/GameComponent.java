@@ -365,10 +365,16 @@ public class GameComponent extends JComponent {
 		} else {
 			pushY = (dy >= 0) ? tile : -tile;
 		}
-		Rectangle dest = new Rectangle(e.getX() + pushX, e.getY() + pushY, Enemy.SIZE, Enemy.SIZE);
+		// CHANGED: instead of checking the full enemy bounding box against walls
+		// (which always fails when the enemy is already touching a wall in the
+		// perpendicular direction), only check a small point at the center of
+		// the destination. This way a wall above/below does not block a sideways push.
+		int centerX = e.getX() + pushX + Enemy.SIZE / 2;
+		int centerY = e.getY() + pushY + Enemy.SIZE / 2;
+		Rectangle centerPoint = new Rectangle(centerX, centerY, 1, 1);
 		boolean wallBlocked = false;
 		for (Rectangle wall : walls) {
-			if (dest.intersects(wall)) { wallBlocked = true; break; }
+			if (centerPoint.intersects(wall)) { wallBlocked = true; break; }
 		}
 		if (!wallBlocked) {
 			e.setPosition(e.getX() + pushX, e.getY() + pushY);

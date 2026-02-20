@@ -61,6 +61,8 @@ public class GameComponent extends JComponent {
 	private static boolean triedLoadBackground = false;
 	private static Image wallSprite;
 	private static boolean triedLoadWall = false;
+	private static Image exitSprite = null;
+	private static boolean triedLoadExit = false;
 
 	private JButton restartButton = new JButton("Restart");// initialize start button
 	private JLabel endMessage = new JLabel(""); // initialize end message to be changed based on outcome of game
@@ -412,6 +414,7 @@ public class GameComponent extends JComponent {
 		loadBackgroundOnce();
 		loadWallSpriteOnce();
 		loadTrapDoorSpriteOnce();
+		loadExitSpriteOnce();
 
 		if (background != null) {
 			g2.drawImage(background, 0, 0, getWidth(), getHeight(), null);
@@ -448,17 +451,18 @@ public class GameComponent extends JComponent {
 			}
 		}
 		for (Rectangle et : exitTiles) {
-			g2.setColor(new Color(255, 215, 0));
-			g2.fill(et);
-			g2.setColor(new Color(180, 140, 0));
-			g2.setStroke(new BasicStroke(2));
-			g2.draw(et);
-		}
-		if (!exitTiles.isEmpty()) {
-			Rectangle first = exitTiles.get(0);
-			g2.setColor(Color.BLACK);
-			g2.setFont(new Font("Arial", Font.BOLD, 11));
-			g2.drawString("EXIT", first.x, first.y - 3);
+			if (exitSprite != null) {
+				g2.drawImage(exitSprite, et.x, et.y, 60, 20, null);
+			} else {
+				g2.setColor(new Color(255, 215, 0));
+				g2.fill(et);
+				g2.setColor(new Color(180, 140, 0));
+				g2.setStroke(new BasicStroke(2));
+				g2.draw(et);
+				g2.setColor(Color.BLACK);
+				g2.setFont(new Font("Arial", Font.BOLD, 11));
+				g2.drawString("EXIT", et.x, et.y - 3);
+			}
 		}
 		player1.drawOn(g2);
 		enemy1.drawOn(g2);
@@ -607,6 +611,15 @@ public class GameComponent extends JComponent {
 			trapDoorSprite = ImageIO.read(GameComponent.class.getResource("/ui/trapdoor.png"));
 		} catch (IOException | IllegalArgumentException e) {
 			trapDoorSprite = null;
+		}
+	}
+	private static void loadExitSpriteOnce() { 
+		if (triedLoadExit) return;
+		triedLoadExit = true;
+		try {
+			exitSprite = ImageIO.read(GameComponent.class.getResource("/ui/exit.png"));
+		} catch (IOException | IllegalArgumentException e) {
+			exitSprite = null;
 		}
 	}
 

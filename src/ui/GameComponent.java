@@ -80,10 +80,12 @@ public class GameComponent extends JComponent {
 	private static final long HIT_COOLDOWN_MS = 1500;
 
 	private int coinCollected = 0;
+	private int currentLevel = 1;
 
 	private GameModel model;
 	private JLabel lives = new JLabel("Lives: " + playerLives);
 	private JLabel score = new JLabel("Score: " + coinCollected);
+	private JLabel level = new JLabel("Level: " + currentLevel);
 	private JLabel gameOver = new JLabel("");
 	// Player player1 = new Player(11*tile, 10*tile, Color.RED);
 	Player player1 = new Player(250, 250, Color.RED);
@@ -157,15 +159,22 @@ public class GameComponent extends JComponent {
 
 		lives.setBounds(0, 10, 200, 30);
 		score.setBounds(400, 10, 200, 30);
+		level.setBounds(200, 10, 200, 30);
 
 		lives.setHorizontalAlignment(JLabel.CENTER);
 		score.setHorizontalAlignment(JLabel.CENTER);
+		level.setHorizontalAlignment(JLabel.CENTER);
+
 
 		lives.setFont(statsFont);
 		score.setFont(statsFont);
+		level.setFont(statsFont);
+
 
 		lives.setForeground(Color.BLACK);
 		score.setForeground(Color.BLACK);
+		level.setForeground(Color.BLACK);
+
 		endMessage.setBounds(0, 200, 600, 60);
 		endMessage.setHorizontalAlignment(JLabel.CENTER);
 		endMessage.setFont(new Font("Arial", Font.BOLD, 48));
@@ -183,6 +192,7 @@ public class GameComponent extends JComponent {
 		
 		add(lives);
 		add(score);
+		add(level);
 		add(endMessage);
 		add(restartButton);
 		add(nlevelButton);
@@ -539,6 +549,7 @@ public class GameComponent extends JComponent {
 	private void nextLevel(){
 		playerLives = 3;
 		coinCollected = 0;
+		currentLevel = 2;
 		gameState = GameState.PLAYING;
 		endMessage.setVisible(false);
 		restartButton.setVisible(false);

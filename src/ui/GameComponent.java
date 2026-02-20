@@ -46,7 +46,7 @@ import java.util.Scanner;
 public class GameComponent extends JComponent {
 
 	private enum GameState { // based on state machine knowledge from ECE160
-		PLAYING, WIN, LOSE
+		PLAYING, WIN, LOSE, PAUSED
 	}
 
 	private GameState gameState = GameState.PLAYING;
@@ -67,7 +67,10 @@ public class GameComponent extends JComponent {
 	private JButton restartButton = new JButton("Restart");// initialize start button
 	private JLabel endMessage = new JLabel(""); // initialize end message to be changed based on outcome of game
 	private JButton nlevelButton = new JButton("Next Level");
-	private JButton pauseButton = new JButton("Pause");
+	private JButton pauseButton = new JButton("Pause");       
+	private JLabel pauseMessage = new JLabel("PAUSED");       
+	private JButton continueButton = new JButton("Continue"); 
+	private JButton pauseRestartButton = new JButton("Restart"); 
 	
 	private Timer timer;
 	int playerLives = 3;
@@ -168,8 +171,8 @@ public class GameComponent extends JComponent {
 		Font statsFont = new Font("Arial", Font.BOLD, 22);
 
 		lives.setBounds(0, 10, 200, 30);
-		score.setBounds(400, 10, 200, 30);
-		level.setBounds(200, 10, 200, 30);
+		score.setBounds(300, 10, 200, 30);
+		level.setBounds(150, 10, 200, 30);
 
 		lives.setHorizontalAlignment(JLabel.CENTER);
 		score.setHorizontalAlignment(JLabel.CENTER);
@@ -197,12 +200,34 @@ public class GameComponent extends JComponent {
 		nlevelButton.setBounds(240, 400, 120, 40);
 		nlevelButton.setVisible(false);
 		
-		pauseButton.setBounds(300, 400, 80, 40);
+		pauseButton.setBounds(500, 10, 80, 25);
 		pauseButton.setVisible(true);
+		pauseButton.addActionListener(e -> pauseGame());
+
+		pauseMessage.setBounds(0, 200, 600, 60);
+		pauseMessage.setHorizontalAlignment(JLabel.CENTER);
+		pauseMessage.setFont(new Font("Arial", Font.BOLD, 48));
+		pauseMessage.setForeground(Color.BLUE);
+		pauseMessage.setVisible(false);
+
+		continueButton.setBounds(240, 300, 120, 40);
+		continueButton.setVisible(false);
+		continueButton.addActionListener(e -> resumeGame());
+
+		pauseRestartButton.setBounds(240, 360, 120, 40);
+		pauseRestartButton.setVisible(false);
+		pauseRestartButton.addActionListener(e -> {
+			hidePauseMenu();
+			restartGame();
+		});
+
+		add(pauseButton);
+		add(pauseMessage);
+		add(continueButton);
+		add(pauseRestartButton);
 		
 		restartButton.addActionListener(e -> restartGame());
 		nlevelButton.addActionListener(e -> nextLevel());
-		pauseButton.addActionListener(e -> pauseGame());
 		
 		add(lives);
 		add(score);
@@ -331,6 +356,8 @@ public class GameComponent extends JComponent {
 						endMessage.setText("YOU LOSE");
 						endMessage.setVisible(true);
 						restartButton.setVisible(true);
+						pauseButton.setVisible(false);
+
 					}
 					boolean onExit = false;
 					
@@ -347,6 +374,7 @@ public class GameComponent extends JComponent {
 						endMessage.setVisible(true);
 						restartButton.setVisible(true);
 						nlevelButton.setVisible(true);
+						pauseButton.setVisible(false);
 					}
 					
 				
@@ -652,6 +680,29 @@ public class GameComponent extends JComponent {
 			wallSprite = null; // fallback safe
 		}
 	}
+	
+	private void pauseGame() {
+		gameState = GameState.PAUSED;
+		timer.stop();
+		pauseButton.setVisible(false);
+		pauseMessage.setVisible(true);
+		continueButton.setVisible(true);
+		pauseRestartButton.setVisible(true);
+	}
+	
+	private void resumeGame() {
+		gameState = GameState.PLAYING;
+		timer.start();
+		hidePauseMenu();
+		requestFocus();
+	}
+	
+	private void hidePauseMenu() {
+		pauseMessage.setVisible(false);
+		continueButton.setVisible(false);
+		pauseRestartButton.setVisible(false);
+		pauseButton.setVisible(true);
+	}
 
 	private void restartGame() {
 		playerLives = 3;
@@ -675,8 +726,6 @@ public class GameComponent extends JComponent {
 		loadLevel("LEVEL2.txt");
 		timer.start();
 	}
-	private void pauseGame() {
-		
-	}
+	
 
 }

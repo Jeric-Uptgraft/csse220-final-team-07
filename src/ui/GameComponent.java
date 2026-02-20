@@ -99,7 +99,7 @@ public class GameComponent extends JComponent {
 
 	Enemy enemy2 = new Enemy(25 * tile, 25 * tile, Color.GREEN);
 
-	private Rectangle exitTile = null;
+	private ArrayList<Rectangle> exitTiles = new ArrayList<>();
 	private int currentLevel = 1;
 	// On all of the boundary wall points, set as rectangles, so that when the
 	// player
@@ -306,8 +306,12 @@ public class GameComponent extends JComponent {
 						endMessage.setVisible(true);
 						restartButton.setVisible(true);
 					}
-					if (coins.size() == 0 && exitTile != null
-							&& player1.getBounds().intersects(exitTile)
+					boolean onExit = false;
+					for (Rectangle et : exitTiles) {
+						if (player1.getBounds().intersects(et)) { onExit = true; break; }
+					}
+						
+					if (coins.size() == 0 && !exitTiles.isEmpty() && onExit
 							&& gameState == GameState.PLAYING) {
 						gameState = GameState.WIN;
 						timer.stop();
@@ -413,13 +417,19 @@ public class GameComponent extends JComponent {
 				g2.fill(wall);
 			}
 		}
-		if (exitTile != null) {
-			g2.setColor(new Color(0, 200, 80));
-			g2.fill(exitTile);
-			g2.setColor(Color.WHITE);
-			g2.setFont(new Font("Arial", Font.BOLD, 9));
-			g2.drawString("EXIT", exitTile.x + 2, exitTile.y + 13);
-		} 
+		for (Rectangle et : exitTiles) {
+			g2.setColor(new Color(255, 215, 0));
+			g2.fill(et);
+			g2.setColor(new Color(180, 140, 0));
+			g2.setStroke(new BasicStroke(2));
+			g2.draw(et);
+		}
+		if (!exitTiles.isEmpty()) {
+			Rectangle first = exitTiles.get(0);
+			g2.setColor(Color.BLACK);
+			g2.setFont(new Font("Arial", Font.BOLD, 11));
+			g2.drawString("EXIT", first.x, first.y - 3);
+		}
 		player1.drawOn(g2);
 		enemy1.drawOn(g2);
 		enemy2.drawOn(g2);
@@ -463,7 +473,7 @@ public class GameComponent extends JComponent {
 		patrolTiles2.clear();
 		// optional: if you want score to reset per level load
 		coinCollected = 0;
-		exitTile = null;
+		exitTiles.clear();
 		
 		int enemyCount = 0;
 
@@ -526,7 +536,7 @@ public class GameComponent extends JComponent {
 					}
 					
 					case 'X':
-						exitTile = new Rectangle(px,py,tile,tile);
+						exitTiles.add(new Rectangle(px,py,tile,tile));
 					default:
 						// '.' or anything else
 						break;

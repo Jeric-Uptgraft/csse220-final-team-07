@@ -101,6 +101,11 @@ public class GameComponent extends JComponent {
 
 	private ArrayList<Rectangle> exitTiles = new ArrayList<>();
 	private int currentLevel = 1;
+	private ArrayList<Rectangle> trapDoors = new ArrayList<>(); 
+	private static Image trapDoorSprite = null;
+	private static boolean triedLoadTrapDoor = false;
+	private long lastTeleportMs = 0;
+	private static final long TELEPORT_COOLDOWN_MS = 1000;
 	// On all of the boundary wall points, set as rectangles, so that when the
 	// player
 	// is also set as a rectangle, we can check collisions
@@ -269,6 +274,19 @@ public class GameComponent extends JComponent {
 					break;
 				}
 			}
+			//trap door teleport check
+			long nowTeleport = System.currentTimeMillis();
+			if (trapDoors.size() == 2 && nowTeleport - lastTeleportMs > TELEPORT_COOLDOWN_MS) {
+				Rectangle trap0 = trapDoors.get(0);
+				Rectangle trap1 = trapDoors.get(1);
+				if (player1.getBounds().intersects(trap0)) {
+					player1.setPosition(trap1.x, trap1.y);
+					lastTeleportMs = nowTeleport;
+				} else if (player1.getBounds().intersects(trap1)) {
+					player1.setPosition(trap0.x, trap0.y);
+					lastTeleportMs = nowTeleport;
+				}
+			}
 
 				long now = System.currentTimeMillis();
 				if ((player1.getBounds().intersects(enemy1.getBounds())
@@ -307,6 +325,7 @@ public class GameComponent extends JComponent {
 						restartButton.setVisible(true);
 					}
 					boolean onExit = false;
+					
 					for (Rectangle et : exitTiles) {
 						if (player1.getBounds().intersects(et)) { onExit = true; break; }
 					}
@@ -392,6 +411,7 @@ public class GameComponent extends JComponent {
 		Graphics2D g2 = (Graphics2D) g;
 		loadBackgroundOnce();
 		loadWallSpriteOnce();
+		loadTrapDoorSpriteOnce();
 
 		if (background != null) {
 			g2.drawImage(background, 0, 0, getWidth(), getHeight(), null);
@@ -415,6 +435,16 @@ public class GameComponent extends JComponent {
 				// fallback if image fails
 				g2.setColor(Color.GRAY);
 				g2.fill(wall);
+			}
+		}
+		for (Rectangle td : trapDoors) {
+			if (trapDoorSprite != null) {
+				g2.drawImage(trapDoorSprite, td.x, td.y, td.width, td.height, null);
+			} else {
+				g2.setColor(new Color(139, 69, 19));
+				g2.fill(td);
+				g2.setColor(Color.BLACK);
+				g2.draw(td);
 			}
 		}
 		for (Rectangle et : exitTiles) {
@@ -474,6 +504,7 @@ public class GameComponent extends JComponent {
 		// optional: if you want score to reset per level load
 		coinCollected = 0;
 		exitTiles.clear();
+		trapDoors.clear();
 		
 		int enemyCount = 0;
 
@@ -534,7 +565,9 @@ public class GameComponent extends JComponent {
 						enemyCount++;
 						break;
 					}
-					
+					case 'T':
+						trapDoors.add(new Rectangle(px,py,tile,tile));
+						break;
 					case 'X':
 						exitTiles.add(new Rectangle(px,py,tile,tile));
 					default:
@@ -564,6 +597,15 @@ public class GameComponent extends JComponent {
 		}
 		enemy2.setPath(path2);
 
+	}
+	private static void loadTrapDoorSpriteOnce() {
+		if (triedLoadTrapDoor) return;
+		triedLoadTrapDoor = true;
+		try {
+			trapDoorSprite = ImageIO.read(GameComponent.class.getResource("/ui/trapdoor.png"));
+		} catch (IOException | IllegalArgumentException e) {
+			trapDoorSprite = null;
+		}
 	}
 
 	private static void loadBackgroundOnce() {

@@ -32,6 +32,14 @@ public class Player {
 	private static boolean triedLoad = false;
 	private int x;
     private int y;
+    
+    private double stamina = 100.0;
+    private final double MAX_STAMINA = 100.0;
+    private boolean isSprinting = false;
+    
+    private boolean exhausted = false;
+
+    
 
 	public Player(int x, int y, Color color) {
 		this.x = x;
@@ -40,6 +48,16 @@ public class Player {
 		loadSpriteOnce();
 	}
 
+	public double getStamina() { return stamina; }
+    public void setStamina(double stamina) { this.stamina = stamina; }
+    public double getMaxStamina() { return MAX_STAMINA; }
+    
+    public void setSprinting(boolean sprinting) { this.isSprinting = sprinting; }
+    public boolean isSprinting() { return isSprinting; }
+    
+    public boolean isExhausted() { return exhausted; }
+    public void setExhausted(boolean b) { this.exhausted = b; }
+	
 	public void drawOn(Graphics2D g2) {
 		// TODO: Draw the house body (a rectangle) and the roof (3 lines or a
 		// Polygon)

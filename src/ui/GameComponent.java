@@ -237,34 +237,7 @@ public class GameComponent extends JComponent {
 		add(nlevelButton);
 		add(pauseButton);
 		addKeyListener(new Controller(player1, this));
-//		addKeyListener(new KeyAdapter() {
-//			@Override
-//			public void keyPressed(KeyEvent e) {
-//				if (gameState != GameState.PLAYING) return;
-////			  switch (e.getKeyCode()) {
-////		        case KeyEvent.VK_W -> player1.setVelocity(0, -3);
-////		        case KeyEvent.VK_S -> player1.setVelocity(0, 3);
-////		        case KeyEvent.VK_A -> player1.setVelocity(-3, 0);
-////		        case KeyEvent.VK_D -> player1.setVelocity(3, 0);
-//				// }
-//				if (e.getKeyCode() == KeyEvent.VK_W)
-//					player1.setVelocity(0, -3);
-//				if (e.getKeyCode() == KeyEvent.VK_S)
-//					player1.setVelocity(0, 3);
-//				if (e.getKeyCode() == KeyEvent.VK_A)
-//					player1.setVelocity(-3, 0);
-//				if (e.getKeyCode() == KeyEvent.VK_D)
-//					player1.setVelocity(3, 0);
-//
-//			}
-			// @Override
-//		  public void keyReleased(KeyEvent e) {
-//		      switch (e.getKeyCode()) {
-//		          case KeyEvent.VK_W, KeyEvent.VK_S -> player1.stopY();
-//		          case KeyEvent.VK_A, KeyEvent.VK_D -> player1.stopX();
-//		      }
-//		  }
-//		});
+
 
 		loadLevel("LEVEL1.txt");
 		// initializeCoins();
@@ -273,112 +246,118 @@ public class GameComponent extends JComponent {
 		// enemy2.setPath(enemyPath2);
 
 		timer = new Timer(10, e -> {
-			if (gameState != GameState.PLAYING)
-				return;
-			int nextX = player1.getX() + player1.getDx();
-			int nextY = player1.getY() + player1.getDy();
+if (gameState != GameState.PLAYING) return;
 
-			Rectangle nextPos = new Rectangle(nextX, nextY, Player.SIZE, Player.SIZE);
+// stamina and sprinting logic
+boolean isMoving = player1.getDx() != 0 || player1.getDy() != 0;
 
-			boolean blocked = false;
-			for (Rectangle wall : walls) {
-				if (nextPos.intersects(wall)) {
-					blocked = true;
-					break;
-				}
-			}
+if (player1.isSprinting() && isMoving && !player1.isExhausted()) {
+    player1.setStamina(player1.getStamina() - 0.8);
 
-			if (!blocked) {
-				player1.setPosition(nextX, nextY);
-			}
+    if (player1.getStamina() <= 0) {
+        player1.setStamina(0);
+        player1.setSprinting(false);
+        player1.setExhausted(true); // Lock sprinting until recovered
+        
+        // Force speed to walk immediately
+        int vx = (int) Math.signum(player1.getDx()) * 3;
+        int vy = (int) Math.signum(player1.getDy()) * 3;
+        player1.setVelocity(vx, vy);
+    }
+} else {
+    // Refill stamina if not sprinting
+    if (player1.getStamina() < player1.getMaxStamina()) {
+        player1.setStamina(player1.getStamina() + 0.2);
+    }
+    // Optional: Reset exhausted flag if stamina is high enough
+    if (player1.getStamina() > 20) player1.setExhausted(false);
+}
 
-			enemy1.ai();
-			enemy2.ai();
-			player1.update();
-			for (int i = 0; i < coins.size(); i++) {
-				// 1. Get the specific coin at index i
-				Coin currentCoin = coins.get(i);
+// movement and wall collision
+int nextX = player1.getX() + player1.getDx();
+int nextY = player1.getY() + player1.getDy();
+Rectangle nextPos = new Rectangle(nextX, nextY, Player.SIZE, Player.SIZE);
 
-				// 2. Check if that specific coin's bounds hit the player
-				if (currentCoin.getBounds().intersects(player1.getBounds())) {
-					coins.remove(i);
-					coinCollected++;
-					// System.out.println(coinCollected);
-					break;
-				}
-			}
-			//trap door teleport check
-			long nowTeleport = System.currentTimeMillis();
-			if (trapDoors.size() == 2 && nowTeleport - lastTeleportMs > TELEPORT_COOLDOWN_MS) {
-				Rectangle trap0 = trapDoors.get(0);
-				Rectangle trap1 = trapDoors.get(1);
-				if (player1.getBounds().intersects(trap0)) {
-					player1.setPosition(trap1.x, trap1.y);
-					lastTeleportMs = nowTeleport;
-				} else if (player1.getBounds().intersects(trap1)) {
-					player1.setPosition(trap0.x, trap0.y);
-					lastTeleportMs = nowTeleport;
-				}
-			}
+boolean blocked = false;
+for (Rectangle wall : walls) {
+    if (nextPos.intersects(wall)) {
+        blocked = true;
+        break;
+    }
+}
 
-				long now = System.currentTimeMillis();
-				if ((player1.getBounds().intersects(enemy1.getBounds())
-						|| player1.getBounds().intersects(enemy2.getBounds())) && now - lastHitMs > HIT_COOLDOWN_MS) { // player
-																														// only
-																														// gets
-																														// hit
-																														// once
-																														// about
-																														// 1.50
-																														// seconds
-																														// to
-																														// avoid
-																														// freezing
-				
-					//if (player1.getBounds().intersects(enemy1.getBounds()) // if either enemy intersects(collides)
-																			// player rectangles
-						//	|| player1.getBounds().intersects(enemy2.getBounds())) {
+if (!blocked) {
+    player1.setPosition(nextX, nextY);
+}
 
-						// resets player to center - placeholder
+// trap door teleportation
+long now = System.currentTimeMillis();
+if (trapDoors.size() == 2 && now - lastTeleportMs > TELEPORT_COOLDOWN_MS) {
+    Rectangle trap0 = trapDoors.get(0);
+    Rectangle trap1 = trapDoors.get(1);
+    
+    if (player1.getBounds().intersects(trap0)) {
+        player1.setPosition(trap1.x, trap1.y);
+        lastTeleportMs = now;
+    } else if (player1.getBounds().intersects(trap1)) {
+        player1.setPosition(trap0.x, trap0.y);
+        lastTeleportMs = now;
+    }
+}
 
-						//lives.setText("Lives: " + playerLives);
-						Enemy hitEnemy = player1.getBounds().intersects(enemy1.getBounds()) ? enemy1 : enemy2;
-						pushEnemyAway(hitEnemy);
-						lastHitMs = now;
-						playerLives--;
+// updates and coin collection
+enemy1.ai();
+enemy2.ai();
+player1.update(); // Clamps to screen
 
-					}
+for (int i = 0; i < coins.size(); i++) {
+    if (coins.get(i).getBounds().intersects(player1.getBounds())) {
+        coins.remove(i);
+        coinCollected++;
+        break; 
+    }
+}
 
-					if (playerLives <= 0) {
-						gameState = GameState.LOSE;
-						timer.stop();// sets player back to middle if lose all lives
+// enemy collision
+if ((player1.getBounds().intersects(enemy1.getBounds()) || 
+     player1.getBounds().intersects(enemy2.getBounds())) && 
+     now - lastHitMs > HIT_COOLDOWN_MS) {
+    
+    Enemy hitEnemy = player1.getBounds().intersects(enemy1.getBounds()) ? enemy1 : enemy2;
+    pushEnemyAway(hitEnemy);
+    lastHitMs = now;
+    playerLives--;
+}
 
-						endMessage.setText("YOU LOSE");
-						endMessage.setVisible(true);
-						restartButton.setVisible(true);
-						pauseButton.setVisible(false);
+// win/lose condition
+if (playerLives <= 0) {
+    gameState = GameState.LOSE;
+    timer.stop();
+    endMessage.setText("YOU LOSE");
+    endMessage.setVisible(true);
+    restartButton.setVisible(true);
+    pauseButton.setVisible(false); // Clean up UI
+}
 
-					}
-					boolean onExit = false;
-					
-					for (Rectangle et : exitTiles) {
-						if (player1.getBounds().intersects(et)) { onExit = true; break; }
-					}
-						
-					if (coins.size() == 0 && !exitTiles.isEmpty() && onExit
-							&& gameState == GameState.PLAYING) {
-						gameState = GameState.WIN;
-						timer.stop();
+boolean onExit = false;
+for (Rectangle et : exitTiles) {
+    if (player1.getBounds().intersects(et)) { 
+        onExit = true; 
+        break; 
+    }
+}
 
-						endMessage.setText("YOU WIN!");
-						endMessage.setVisible(true);
-						restartButton.setVisible(true);
-						nlevelButton.setVisible(true);
-						pauseButton.setVisible(false);
-					}
-					
-				
-				repaint();
+if (coins.isEmpty() && !exitTiles.isEmpty() && onExit) {
+    gameState = GameState.WIN;
+    timer.stop();
+    endMessage.setText("YOU WIN!");
+    endMessage.setVisible(true);
+    restartButton.setVisible(true);
+    nlevelButton.setVisible(true);
+    pauseButton.setVisible(false);
+}
+
+repaint();
 			
 		});
 
@@ -531,7 +510,21 @@ public class GameComponent extends JComponent {
 		g2.setStroke(new BasicStroke(4));
 
 		g2.setColor(currentcolor); // Set back to original color
+		
+		
+		// DRAW STAMINA BAR (Top Left under Lives)
+	    g2.setColor(Color.BLACK);
+	    g2.fillRect(20, 45, 104, 14); // Border
+	    g2.setColor(Color.DARK_GRAY);
+	    g2.fillRect(22, 47, 100, 10); // Background
+	    
+	    // Change color based on amount
+	    if (player1.getStamina() > 30) g2.setColor(Color.GREEN);
+	    else g2.setColor(Color.RED);
+	    
+	    g2.fillRect(22, 47, (int)player1.getStamina(), 10); // The actual stamina
 	}
+	
 	// TODO: draw based on model state
 
 	private void loadLevel(String filename) {

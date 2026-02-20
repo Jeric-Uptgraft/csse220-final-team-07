@@ -46,7 +46,7 @@ import java.util.Scanner;
 public class GameComponent extends JComponent {
 
 	private enum GameState { // based on state machine knowledge from ECE160
-		PLAYING, WIN, LOSE
+		PLAYING, WIN, LOSE, PAUSED
 	}
 
 	private GameState gameState = GameState.PLAYING;
@@ -61,10 +61,16 @@ public class GameComponent extends JComponent {
 	private static boolean triedLoadBackground = false;
 	private static Image wallSprite;
 	private static boolean triedLoadWall = false;
+	private static Image exitSprite = null;
+	private static boolean triedLoadExit = false;
 
 	private JButton restartButton = new JButton("Restart");// initialize start button
 	private JLabel endMessage = new JLabel(""); // initialize end message to be changed based on outcome of game
 	private JButton nlevelButton = new JButton("Next Level");
+	private JButton pauseButton = new JButton("Pause");       
+	private JLabel pauseMessage = new JLabel("PAUSED");       
+	private JButton continueButton = new JButton("Continue"); 
+	private JButton pauseRestartButton = new JButton("Restart"); 
 	
 	private Timer timer;
 	int playerLives = 3;
@@ -101,6 +107,11 @@ public class GameComponent extends JComponent {
 
 	private ArrayList<Rectangle> exitTiles = new ArrayList<>();
 	private int currentLevel = 1;
+	private ArrayList<Rectangle> trapDoors = new ArrayList<>(); 
+	private static Image trapDoorSprite = null;
+	private static boolean triedLoadTrapDoor = false;
+	private long lastTeleportMs = 0;
+	private static final long TELEPORT_COOLDOWN_MS = 1000;
 	// On all of the boundary wall points, set as rectangles, so that when the
 	// player
 	// is also set as a rectangle, we can check collisions
@@ -160,8 +171,8 @@ public class GameComponent extends JComponent {
 		Font statsFont = new Font("Arial", Font.BOLD, 22);
 
 		lives.setBounds(0, 10, 200, 30);
-		score.setBounds(400, 10, 200, 30);
-		level.setBounds(200, 10, 200, 30);
+		score.setBounds(300, 10, 200, 30);
+		level.setBounds(150, 10, 200, 30);
 
 		lives.setHorizontalAlignment(JLabel.CENTER);
 		score.setHorizontalAlignment(JLabel.CENTER);
@@ -188,7 +199,33 @@ public class GameComponent extends JComponent {
 		
 		nlevelButton.setBounds(240, 400, 120, 40);
 		nlevelButton.setVisible(false);
+		
+		pauseButton.setBounds(500, 10, 80, 25);
+		pauseButton.setVisible(true);
+		pauseButton.addActionListener(e -> pauseGame());
 
+		pauseMessage.setBounds(0, 200, 600, 60);
+		pauseMessage.setHorizontalAlignment(JLabel.CENTER);
+		pauseMessage.setFont(new Font("Arial", Font.BOLD, 48));
+		pauseMessage.setForeground(Color.BLUE);
+		pauseMessage.setVisible(false);
+
+		continueButton.setBounds(240, 300, 120, 40);
+		continueButton.setVisible(false);
+		continueButton.addActionListener(e -> resumeGame());
+
+		pauseRestartButton.setBounds(240, 360, 120, 40);
+		pauseRestartButton.setVisible(false);
+		pauseRestartButton.addActionListener(e -> {
+			hidePauseMenu();
+			restartGame();
+		});
+
+		add(pauseButton);
+		add(pauseMessage);
+		add(continueButton);
+		add(pauseRestartButton);
+		
 		restartButton.addActionListener(e -> restartGame());
 		nlevelButton.addActionListener(e -> nextLevel());
 		
@@ -198,6 +235,7 @@ public class GameComponent extends JComponent {
 		add(endMessage);
 		add(restartButton);
 		add(nlevelButton);
+		add(pauseButton);
 		addKeyListener(new Controller(player1, this));
 
 
@@ -208,105 +246,119 @@ public class GameComponent extends JComponent {
 		// enemy2.setPath(enemyPath2);
 
 		timer = new Timer(10, e -> {
-		    if (gameState != GameState.PLAYING) return;
+if (gameState != GameState.PLAYING) return;
 
-		    boolean isMoving = player1.getDx() != 0 || player1.getDy() != 0;
+// stamina and sprinting logic
+boolean isMoving = player1.getDx() != 0 || player1.getDy() != 0;
 
-		    if (player1.isSprinting() && isMoving && !player1.isExhausted()) {
-		        player1.setStamina(player1.getStamina() - 0.8);
+if (player1.isSprinting() && isMoving && !player1.isExhausted()) {
+    player1.setStamina(player1.getStamina() - 0.8);
 
-		        if (player1.getStamina() <= 0) {
-		            player1.setStamina(0);
-		            player1.setSprinting(false);
-		            player1.setExhausted(true); // lock the sprinting state
-		            
-		            // Force speed to walk
-		            int vx = (int) Math.signum(player1.getDx()) * 3;
-		            int vy = (int) Math.signum(player1.getDy()) * 3;
-		            player1.setVelocity(vx, vy);
-		        }
-		    } else {
-		        // Refill stamina
-		        if (player1.getStamina() < player1.getMaxStamina()) {
-		            player1.setStamina(player1.getStamina() + 0.2);
-		        }
-		        
-		       
-		    }
+    if (player1.getStamina() <= 0) {
+        player1.setStamina(0);
+        player1.setSprinting(false);
+        player1.setExhausted(true); // Lock sprinting until recovered
+        
+        // Force speed to walk immediately
+        int vx = (int) Math.signum(player1.getDx()) * 3;
+        int vy = (int) Math.signum(player1.getDy()) * 3;
+        player1.setVelocity(vx, vy);
+    }
+} else {
+    // Refill stamina if not sprinting
+    if (player1.getStamina() < player1.getMaxStamina()) {
+        player1.setStamina(player1.getStamina() + 0.2);
+    }
+    // Optional: Reset exhausted flag if stamina is high enough
+    if (player1.getStamina() > 20) player1.setExhausted(false);
+}
 
-		    // MOVEMENT AND WALL COLLISION
-		    int nextX = player1.getX() + player1.getDx();
-		    int nextY = player1.getY() + player1.getDy();
+// movement and wall collision
+int nextX = player1.getX() + player1.getDx();
+int nextY = player1.getY() + player1.getDy();
+Rectangle nextPos = new Rectangle(nextX, nextY, Player.SIZE, Player.SIZE);
 
-		    Rectangle nextPos = new Rectangle(nextX, nextY, Player.SIZE, Player.SIZE);
+boolean blocked = false;
+for (Rectangle wall : walls) {
+    if (nextPos.intersects(wall)) {
+        blocked = true;
+        break;
+    }
+}
 
-		    boolean blocked = false;
-		    for (Rectangle wall : walls) {
-		        if (nextPos.intersects(wall)) {
-		            blocked = true;
-		            break;
-		        }
-		    }
+if (!blocked) {
+    player1.setPosition(nextX, nextY);
+}
 
-		    if (!blocked) {
-		        player1.setPosition(nextX, nextY);
-		    }
+// trap door teleportation
+long now = System.currentTimeMillis();
+if (trapDoors.size() == 2 && now - lastTeleportMs > TELEPORT_COOLDOWN_MS) {
+    Rectangle trap0 = trapDoors.get(0);
+    Rectangle trap1 = trapDoors.get(1);
+    
+    if (player1.getBounds().intersects(trap0)) {
+        player1.setPosition(trap1.x, trap1.y);
+        lastTeleportMs = now;
+    } else if (player1.getBounds().intersects(trap1)) {
+        player1.setPosition(trap0.x, trap0.y);
+        lastTeleportMs = now;
+    }
+}
 
-		    // ENEMY AI AND PLAYER UPDATE
-		    enemy1.ai();
-		    enemy2.ai();
-		    player1.update(); // Clamps player to screen bounds
+// updates and coin collection
+enemy1.ai();
+enemy2.ai();
+player1.update(); // Clamps to screen
 
-		    // COIN COLLECTION
-		    for (int i = 0; i < coins.size(); i++) {
-		        Coin currentCoin = coins.get(i);
-		        if (currentCoin.getBounds().intersects(player1.getBounds())) {
-		            coins.remove(i);
-		            coinCollected++;
-		            break; 
-		        }
-		    }
+for (int i = 0; i < coins.size(); i++) {
+    if (coins.get(i).getBounds().intersects(player1.getBounds())) {
+        coins.remove(i);
+        coinCollected++;
+        break; 
+    }
+}
 
-		    // ENEMY COLLISION (LIVES & COOLDOWN)
-		    long now = System.currentTimeMillis();
-		    if ((player1.getBounds().intersects(enemy1.getBounds()) || 
-		         player1.getBounds().intersects(enemy2.getBounds())) && 
-		         now - lastHitMs > HIT_COOLDOWN_MS) {
-		        
-		        Enemy hitEnemy = player1.getBounds().intersects(enemy1.getBounds()) ? enemy1 : enemy2;
-		        pushEnemyAway(hitEnemy);
-		        lastHitMs = now;
-		        playerLives--;
-		    }
+// enemy collision
+if ((player1.getBounds().intersects(enemy1.getBounds()) || 
+     player1.getBounds().intersects(enemy2.getBounds())) && 
+     now - lastHitMs > HIT_COOLDOWN_MS) {
+    
+    Enemy hitEnemy = player1.getBounds().intersects(enemy1.getBounds()) ? enemy1 : enemy2;
+    pushEnemyAway(hitEnemy);
+    lastHitMs = now;
+    playerLives--;
+}
 
-		    // WIN/LOSE CONDITIONS
-		    if (playerLives <= 0) {
-		        gameState = GameState.LOSE;
-		        timer.stop();
-		        endMessage.setText("YOU LOSE");
-		        endMessage.setVisible(true);
-		        restartButton.setVisible(true);
-		    }
+// win/lose condition
+if (playerLives <= 0) {
+    gameState = GameState.LOSE;
+    timer.stop();
+    endMessage.setText("YOU LOSE");
+    endMessage.setVisible(true);
+    restartButton.setVisible(true);
+    pauseButton.setVisible(false); // Clean up UI
+}
 
-		    boolean onExit = false;
-		    for (Rectangle et : exitTiles) {
-		        if (player1.getBounds().intersects(et)) { 
-		            onExit = true; 
-		            break; 
-		        }
-		    }
-		        
-		    if (coins.isEmpty() && !exitTiles.isEmpty() && onExit && gameState == GameState.PLAYING) {
-		        gameState = GameState.WIN;
-		        timer.stop();
-		        endMessage.setText("YOU WIN!");
-		        endMessage.setVisible(true);
-		        restartButton.setVisible(true);
-		        nlevelButton.setVisible(true);
-		    }
-		    
-		    // REFRESH SCREEN
-		    repaint();
+boolean onExit = false;
+for (Rectangle et : exitTiles) {
+    if (player1.getBounds().intersects(et)) { 
+        onExit = true; 
+        break; 
+    }
+}
+
+if (coins.isEmpty() && !exitTiles.isEmpty() && onExit) {
+    gameState = GameState.WIN;
+    timer.stop();
+    endMessage.setText("YOU WIN!");
+    endMessage.setVisible(true);
+    restartButton.setVisible(true);
+    nlevelButton.setVisible(true);
+    pauseButton.setVisible(false);
+}
+
+repaint();
+			
 		});
 
 	timer.start();
@@ -374,6 +426,8 @@ public class GameComponent extends JComponent {
 		Graphics2D g2 = (Graphics2D) g;
 		loadBackgroundOnce();
 		loadWallSpriteOnce();
+		loadTrapDoorSpriteOnce();
+		loadExitSpriteOnce();
 
 		if (background != null) {
 			g2.drawImage(background, 0, 0, getWidth(), getHeight(), null);
@@ -399,18 +453,29 @@ public class GameComponent extends JComponent {
 				g2.fill(wall);
 			}
 		}
-		for (Rectangle et : exitTiles) {
-			g2.setColor(new Color(255, 215, 0));
-			g2.fill(et);
-			g2.setColor(new Color(180, 140, 0));
-			g2.setStroke(new BasicStroke(2));
-			g2.draw(et);
+		for (Rectangle td : trapDoors) {
+			if (trapDoorSprite != null) {
+				g2.drawImage(trapDoorSprite, td.x, td.y, td.width, td.height, null);
+			} else {
+				g2.setColor(new Color(139, 69, 19));
+				g2.fill(td);
+				g2.setColor(Color.BLACK);
+				g2.draw(td);
+			}
 		}
-		if (!exitTiles.isEmpty()) {
-			Rectangle first = exitTiles.get(0);
-			g2.setColor(Color.BLACK);
-			g2.setFont(new Font("Arial", Font.BOLD, 11));
-			g2.drawString("EXIT", first.x, first.y - 3);
+		for (Rectangle et : exitTiles) {
+			if (exitSprite != null) {
+				g2.drawImage(exitSprite, et.x, et.y, 60, 20, null);
+			} else {
+				g2.setColor(new Color(255, 215, 0));
+				g2.fill(et);
+				g2.setColor(new Color(180, 140, 0));
+				g2.setStroke(new BasicStroke(2));
+				g2.draw(et);
+				g2.setColor(Color.BLACK);
+				g2.setFont(new Font("Arial", Font.BOLD, 11));
+				g2.drawString("EXIT", et.x, et.y - 3);
+			}
 		}
 		player1.drawOn(g2);
 		enemy1.drawOn(g2);
@@ -470,6 +535,7 @@ public class GameComponent extends JComponent {
 		// optional: if you want score to reset per level load
 		coinCollected = 0;
 		exitTiles.clear();
+		trapDoors.clear();
 		
 		int enemyCount = 0;
 
@@ -531,6 +597,10 @@ public class GameComponent extends JComponent {
 						break;
 					}
 					
+					case 'T':
+						trapDoors.add(new Rectangle(px,py,40,40));
+						break;
+					
 					case 'X':
 						exitTiles.add(new Rectangle(px,py,tile,tile));
 					default:
@@ -561,6 +631,24 @@ public class GameComponent extends JComponent {
 		enemy2.setPath(path2);
 
 	}
+	private static void loadTrapDoorSpriteOnce() {
+		if (triedLoadTrapDoor) return;
+		triedLoadTrapDoor = true;
+		try {
+			trapDoorSprite = ImageIO.read(GameComponent.class.getResource("/ui/trapdoor.png"));
+		} catch (IOException | IllegalArgumentException e) {
+			trapDoorSprite = null;
+		}
+	}
+	private static void loadExitSpriteOnce() { 
+		if (triedLoadExit) return;
+		triedLoadExit = true;
+		try {
+			exitSprite = ImageIO.read(GameComponent.class.getResource("/ui/exit.png"));
+		} catch (IOException | IllegalArgumentException e) {
+			exitSprite = null;
+		}
+	}
 
 	private static void loadBackgroundOnce() {
 		if (triedLoadBackground)
@@ -585,6 +673,29 @@ public class GameComponent extends JComponent {
 			wallSprite = null; // fallback safe
 		}
 	}
+	
+	private void pauseGame() {
+		gameState = GameState.PAUSED;
+		timer.stop();
+		pauseButton.setVisible(false);
+		pauseMessage.setVisible(true);
+		continueButton.setVisible(true);
+		pauseRestartButton.setVisible(true);
+	}
+	
+	private void resumeGame() {
+		gameState = GameState.PLAYING;
+		timer.start();
+		hidePauseMenu();
+		requestFocus();
+	}
+	
+	private void hidePauseMenu() {
+		pauseMessage.setVisible(false);
+		continueButton.setVisible(false);
+		pauseRestartButton.setVisible(false);
+		pauseButton.setVisible(true);
+	}
 
 	private void restartGame() {
 		playerLives = 3;
@@ -608,5 +719,6 @@ public class GameComponent extends JComponent {
 		loadLevel("LEVEL2.txt");
 		timer.start();
 	}
+	
 
 }

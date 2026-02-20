@@ -31,5 +31,7 @@
 ..............................
 
 
+
+
 # TILE LEGEND: * wall  . floor  P player spawn  E enemy spawn
 # B enemy1 patrol  D enemy2 patrol  C coin  X exit  T trapdoor

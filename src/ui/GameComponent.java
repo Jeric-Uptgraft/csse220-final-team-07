@@ -565,9 +565,11 @@ public class GameComponent extends JComponent {
 						enemyCount++;
 						break;
 					}
+					
 					case 'T':
 						trapDoors.add(new Rectangle(px,py,40,40));
 						break;
+					
 					case 'X':
 						exitTiles.add(new Rectangle(px,py,tile,tile));
 					default:

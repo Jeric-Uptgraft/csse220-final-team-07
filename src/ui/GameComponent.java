@@ -716,6 +716,7 @@ repaint();
 		endMessage.setVisible(false);
 		restartButton.setVisible(false);
 		nlevelButton.setVisible(false);
+		pauseButton.setVisible(true);
 		loadLevel("LEVEL2.txt");
 		timer.start();
 	}

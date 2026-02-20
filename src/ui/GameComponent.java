@@ -67,6 +67,7 @@ public class GameComponent extends JComponent {
 	private JButton restartButton = new JButton("Restart");// initialize start button
 	private JLabel endMessage = new JLabel(""); // initialize end message to be changed based on outcome of game
 	private JButton nlevelButton = new JButton("Next Level");
+	private JButton pauseButton = new JButton("Pause");
 	
 	private Timer timer;
 	int playerLives = 3;
@@ -195,9 +196,13 @@ public class GameComponent extends JComponent {
 		
 		nlevelButton.setBounds(240, 400, 120, 40);
 		nlevelButton.setVisible(false);
-
+		
+		pauseButton.setBounds(300, 400, 80, 40);
+		pauseButton.setVisible(true);
+		
 		restartButton.addActionListener(e -> restartGame());
 		nlevelButton.addActionListener(e -> nextLevel());
+		pauseButton.addActionListener(e -> pauseGame());
 		
 		add(lives);
 		add(score);
@@ -205,6 +210,7 @@ public class GameComponent extends JComponent {
 		add(endMessage);
 		add(restartButton);
 		add(nlevelButton);
+		add(pauseButton);
 		addKeyListener(new Controller(player1, this));
 //		addKeyListener(new KeyAdapter() {
 //			@Override
@@ -668,6 +674,9 @@ public class GameComponent extends JComponent {
 		nlevelButton.setVisible(false);
 		loadLevel("LEVEL2.txt");
 		timer.start();
+	}
+	private void pauseGame() {
+		
 	}
 
 }

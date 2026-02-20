@@ -406,7 +406,13 @@ public class GameComponent extends JComponent {
 				g2.fill(wall);
 			}
 		}
-		
+		if (exitTile != null) {
+			g2.setColor(new Color(0, 200, 80));
+			g2.fill(exitTile);
+			g2.setColor(Color.WHITE);
+			g2.setFont(new Font("Arial", Font.BOLD, 9));
+			g2.drawString("EXIT", exitTile.x + 2, exitTile.y + 13);
+		} 
 		player1.drawOn(g2);
 		enemy1.drawOn(g2);
 		enemy2.drawOn(g2);
@@ -425,6 +431,7 @@ public class GameComponent extends JComponent {
 
 		lives.setText("Lives: " + playerLives);
 		score.setText("Score: " + coinCollected);
+		level.setText("Level:" + currentLevel);
 
 		// draw grid lines
 //	for (int x = 0; x <= 600; x += tile) {
@@ -449,7 +456,8 @@ public class GameComponent extends JComponent {
 		patrolTiles2.clear();
 		// optional: if you want score to reset per level load
 		coinCollected = 0;
-
+		exitTile = null;
+		
 		int enemyCount = 0;
 
 		// default everything to empty
@@ -511,8 +519,7 @@ public class GameComponent extends JComponent {
 					}
 					
 					case 'X':
-						Point Exit_tile = new Point(px,py);
-
+						exitTile = new Rectangle(px,py,tile,tile);
 					default:
 						// '.' or anything else
 						break;
@@ -572,6 +579,7 @@ public class GameComponent extends JComponent {
 		gameState = GameState.PLAYING;
 		endMessage.setVisible(false);
 		restartButton.setVisible(false);
+		currentLevel = 1;
 		loadLevel("LEVEL1.txt");
 		timer.start();
 

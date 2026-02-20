@@ -163,5 +163,11 @@ public class Enemy {
 		 this.x = px;
 		    this.y = py;
 	}
+	public int getX() {
+		return x;
+	}
+	public int getY() {
+		return y;
+	}
 
 }

@@ -306,7 +306,9 @@ public class GameComponent extends JComponent {
 						endMessage.setVisible(true);
 						restartButton.setVisible(true);
 					}
-					if (coins.size() == 0 && gameState == GameState.PLAYING) {
+					if (coins.size() == 0 && exitTile != null
+							&& player1.getBounds().intersects(exitTile)
+							&& gameState == GameState.PLAYING) {
 						gameState = GameState.WIN;
 						timer.stop();
 
@@ -348,7 +350,31 @@ public class GameComponent extends JComponent {
 //		coins.add(new Coin(318, 375, 25, Color.YELLOW));
 //		coins.add(new Coin(258, 195, 25, Color.YELLOW));
 //	}
-
+	//lets controller check if the game is currently running
+	public boolean isPlaying() {
+		return gameState == GameState.PLAYING;
+	}
+	//pushes an enemy one tile away from the player
+	private void pushEnemyAway(Enemy e) {
+		int dx = e.getX() - player1.getX();
+		int dy = e.getY() - player1.getY();
+		int pushX = 0;
+		int pushY = 0;
+		if (Math.abs(dx) >= Math.abs(dy)) {
+			pushX = (dx >= 0) ? tile : -tile;
+		} else {
+			pushY = (dy >= 0) ? tile : -tile;
+		}
+		Rectangle dest = new Rectangle(e.getX() + pushX, e.getY() + pushY, Enemy.SIZE, Enemy.SIZE);
+		boolean wallBlocked = false;
+		for (Rectangle wall : walls) {
+			if (dest.intersects(wall)) { wallBlocked = true; break; }
+		}
+		if (!wallBlocked) {
+			e.setPosition(e.getX() + pushX, e.getY() + pushY);
+		}
+	}
+	
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -380,7 +406,7 @@ public class GameComponent extends JComponent {
 				g2.fill(wall);
 			}
 		}
-
+		
 		player1.drawOn(g2);
 		enemy1.drawOn(g2);
 		enemy2.drawOn(g2);

@@ -36,11 +36,12 @@ import java.util.Scanner;
  * @author Team 7
  * 
  *         <br>
- *         Purpose: Represents the main visual component of the game. This class
- *         is responsible for rendering the player, enemies, grid, and maze
- *         walls, as well as handling keyboard input and driving the game loop
- *         via a timer.
+ *         Purpose: The visual component of the game. Responsible for driving
+ *         the game loop using a Swing(Timer), Rendering all visual aspects,
+ *         Wiring keyboard input to the controller. and showing win/lose screens
+ *         and restart/next level buttons.
  */
+
 
 public class GameComponent extends JComponent {
 
@@ -80,12 +81,11 @@ public class GameComponent extends JComponent {
 	private static final long HIT_COOLDOWN_MS = 1500;
 
 	private int coinCollected = 0;
-	private int currentLevel = 1;
 
 	private GameModel model;
 	private JLabel lives = new JLabel("Lives: " + playerLives);
 	private JLabel score = new JLabel("Score: " + coinCollected);
-	private JLabel level = new JLabel("Level: " + currentLevel);
+	private JLabel level = new JLabel("Level: 1");
 	private JLabel gameOver = new JLabel("");
 	// Player player1 = new Player(11*tile, 10*tile, Color.RED);
 	Player player1 = new Player(250, 250, Color.RED);
@@ -99,6 +99,8 @@ public class GameComponent extends JComponent {
 
 	Enemy enemy2 = new Enemy(25 * tile, 25 * tile, Color.GREEN);
 
+	private Rectangle exitTile = null;
+	private int currentLevel = 1;
 	// On all of the boundary wall points, set as rectangles, so that when the
 	// player
 	// is also set as a rectangle, we can check collisions
@@ -196,26 +198,27 @@ public class GameComponent extends JComponent {
 		add(endMessage);
 		add(restartButton);
 		add(nlevelButton);
-		addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (gameState != GameState.PLAYING) return;
-//			  switch (e.getKeyCode()) {
-//		        case KeyEvent.VK_W -> player1.setVelocity(0, -3);
-//		        case KeyEvent.VK_S -> player1.setVelocity(0, 3);
-//		        case KeyEvent.VK_A -> player1.setVelocity(-3, 0);
-//		        case KeyEvent.VK_D -> player1.setVelocity(3, 0);
-				// }
-				if (e.getKeyCode() == KeyEvent.VK_W)
-					player1.setVelocity(0, -3);
-				if (e.getKeyCode() == KeyEvent.VK_S)
-					player1.setVelocity(0, 3);
-				if (e.getKeyCode() == KeyEvent.VK_A)
-					player1.setVelocity(-3, 0);
-				if (e.getKeyCode() == KeyEvent.VK_D)
-					player1.setVelocity(3, 0);
-
-			}
+		addKeyListener(new Controller(player1, this));
+//		addKeyListener(new KeyAdapter() {
+//			@Override
+//			public void keyPressed(KeyEvent e) {
+//				if (gameState != GameState.PLAYING) return;
+////			  switch (e.getKeyCode()) {
+////		        case KeyEvent.VK_W -> player1.setVelocity(0, -3);
+////		        case KeyEvent.VK_S -> player1.setVelocity(0, 3);
+////		        case KeyEvent.VK_A -> player1.setVelocity(-3, 0);
+////		        case KeyEvent.VK_D -> player1.setVelocity(3, 0);
+//				// }
+//				if (e.getKeyCode() == KeyEvent.VK_W)
+//					player1.setVelocity(0, -3);
+//				if (e.getKeyCode() == KeyEvent.VK_S)
+//					player1.setVelocity(0, 3);
+//				if (e.getKeyCode() == KeyEvent.VK_A)
+//					player1.setVelocity(-3, 0);
+//				if (e.getKeyCode() == KeyEvent.VK_D)
+//					player1.setVelocity(3, 0);
+//
+//			}
 			// @Override
 //		  public void keyReleased(KeyEvent e) {
 //		      switch (e.getKeyCode()) {
@@ -223,7 +226,7 @@ public class GameComponent extends JComponent {
 //		          case KeyEvent.VK_A, KeyEvent.VK_D -> player1.stopX();
 //		      }
 //		  }
-		});
+//		});
 
 		loadLevel("LEVEL1.txt");
 		// initializeCoins();
@@ -288,7 +291,8 @@ public class GameComponent extends JComponent {
 						// resets player to center - placeholder
 
 						//lives.setText("Lives: " + playerLives);
-
+						Enemy hitEnemy = player1.getBounds().intersects(enemy1.getBounds()) ? enemy1 : enemy2;
+						pushEnemyAway(hitEnemy);
 						lastHitMs = now;
 						playerLives--;
 

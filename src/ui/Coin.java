@@ -12,6 +12,12 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+/**
+ * Class: Coin
+ * @author Team 7 
+ * Purpose: This class contains the functionality for Coins. It defines the characteristics, implements their sprite,
+ * and implements getBounds() functionality for collision behavior.
+ */
 public class Coin {
 	// Constants
     private static final Color BORDER_COLOR = Color.BLACK;

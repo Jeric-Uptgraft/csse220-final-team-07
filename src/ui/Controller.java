@@ -6,7 +6,7 @@ import java.awt.event.KeyEvent;
 /**
  * Class: Controller
  * @author Team 7
- * <br>Purpose: Translates keyboard input into player movement.
+ * <br>Purpose: This class contains controller functionality. It Translates keyboard input into player movement.
  */
 public class Controller extends KeyAdapter {
 

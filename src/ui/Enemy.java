@@ -163,6 +163,9 @@ public class Enemy {
 		 this.x = px;
 		    this.y = py;
 	}
+	public void resetPath() {
+		pathIndex = 0;
+	}
 	public int getX() {
 		return x;
 	}

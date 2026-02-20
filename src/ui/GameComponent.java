@@ -372,6 +372,7 @@ public class GameComponent extends JComponent {
 		}
 		if (!wallBlocked) {
 			e.setPosition(e.getX() + pushX, e.getY() + pushY);
+			e.resetPath();
 		}
 	}
 	
